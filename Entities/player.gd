@@ -1,22 +1,26 @@
 extends CharacterBody3D
 class_name Player
 
-const JUMP_VELOCITY = 4.5
+
+const JUMP_VELOCITY := 4.5
+const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
 
 @onready var state_machine = $AnimationTree.get("parameters/playback")
-@onready var camera = $HeadPivot/Camera3D
+@onready var camera := $HeadPivot/Camera3D
 
 @export var sensitivity: float = 0.005
 @export var vertical_limit: float = 80.0	# Maximum vertical rotation in degrees
 
-var RAY_LENGTH = 1000.0  # Adjust the distance of the raycast
-var movement_speed = 3.0
+var movement_speed := 3.0
 var rotation_x: float = 0.0	# Tracks vertical rotation
 
-# Input vars
-var move_input: Vector2
-var look_input: Vector2
+# Input vars, set by controller node
+var move_input: Vector2 = Vector2.ZERO
+var look_input: Vector2 = Vector2.ZERO
 var jump_input := false
+var sprint_input := false
+var started_shooting_input := false
+var shooting_input := false
 
 
 
@@ -54,7 +58,7 @@ func _physics_process(delta):
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = (transform.basis * Vector3(move_input.x, 0, move_input.y)).normalized()
 	if direction:
-		if Input.is_action_pressed("sprint"):
+		if sprint_input:
 			state_machine.travel("run")
 			movement_speed = 5.0
 		else:
@@ -67,7 +71,7 @@ func _physics_process(delta):
 		velocity.z = move_toward(velocity.z, 0, 3.0)
 		state_machine.travel("idle")
 		
-	if Input.is_action_just_pressed("mouse1") and not Input.is_action_pressed("sprint"):
+	if started_shooting_input and not sprint_input:
 		shoot()
 	
 	move_and_slide()
