@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://djrulb4edqpmm"]
 
 [ext_resource type="Material" uid="uid://wmwp8tp8ff4h" path="res://Assets/brick_material.tres" id="1_wotc0"]
-[ext_resource type="Texture2D" uid="uid://dsrbbeee6g8aq" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_11-128x128.png" id="2_1imcc"]
+[ext_resource type="Texture2D" uid="uid://dvjbaq4ny5xrd" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Tile/Tile_23-128x128.png" id="2_1imcc"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2p4g1"]
 albedo_texture = ExtResource("2_1imcc")
@@ -38,5 +38,5 @@ material = SubResource("StandardMaterial3D_2p4g1")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Building 2"]
 operation = 2
-size = Vector3(8, 2.8, 8)
+size = Vector3(8, 2.9, 8)
 material = SubResource("StandardMaterial3D_jrr45")
