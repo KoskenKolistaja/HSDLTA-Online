@@ -154,7 +154,7 @@ mesh = SubResource("BoxMesh_hlhfk")
 surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="Floor" type="StaticBody3D" parent="NavigationRegion3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.51, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Floor"]
 shape = SubResource("BoxShape3D_dg7w7")
