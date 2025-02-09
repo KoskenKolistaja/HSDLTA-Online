@@ -95,7 +95,6 @@ func shoot_at(object):
 func can_see(object: Node3D) -> bool:
 	#if not object or not object is CollisionObject3D:
 		#return false
-	print(object)
 	var space_state = get_world_3d().direct_space_state
 	var from = global_transform.origin
 	var to = object.global_position + Vector3(0,1,0)
