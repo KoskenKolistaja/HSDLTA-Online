@@ -1,21 +1,17 @@
 extends CharacterBody3D
 
+
 @onready var nav_agent = $NavigationAgent3D
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 
+const DEF_SHOOTING_ROTATION := Vector3(11.9,140.4,0.3)
+const WALK_SPEED: float = 1.5
+const RUN_SPEED: float = 4.0
 
-var alert_position
-
-var current_time = 0
-
-const DEF_SHOOTING_ROTATION = Vector3(11.9,140.4,0.3)
-
-const WALK_SPEED = 1.5
-const RUN_SPEED = 4.0
-
-var target
-
-var idle_target
+var alert_position: Vector3
+var current_time: int = 0
+var target: Node3D = null
+var state = STATES.IDLE
 
 enum STATES {
 	IDLE,
@@ -24,7 +20,6 @@ enum STATES {
 	DEAD
 }
 
-var state = STATES.IDLE
 
 
 func _ready():
@@ -50,7 +45,6 @@ func idle():
 		current_time = Time.get_ticks_msec()
 		check_sight()
 	
-	
 	if nav_agent.is_navigation_finished():
 		look_around()
 	else:
@@ -60,16 +54,13 @@ func idle():
 	if target:
 		change_scene(STATES.ATTACKING)
 
+
 func change_scene(new_state: STATES):
 	state = new_state
 	current_time = Time.get_ticks_msec()
 
+
 func attacking():
-	#if current_time + 100 < Time.get_ticks_msec():
-		#current_time = Time.get_ticks_msec()
-		#check_sight()
-	
-	
 	if not target:
 		change_scene(STATES.ALERT)
 	elif target and can_see(target):
@@ -83,20 +74,23 @@ func attacking():
 			check_sight()
 			current_time = Time.get_ticks_msec()
 
+
 func die():
 	state_machine.travel("die")
 	state = STATES.DEAD
 
+
 func alert():
 	state_machine.travel("idle_alert")
 	stand_still()
+
 
 func shoot_at(object):
 	var direction = (object.global_position - self.global_position).normalized()
 	rotate_towards(direction)
 	state_machine.travel("shoot")
 	stand_still()
-	
+
 
 func can_see(object: Node3D) -> bool:
 	#if not object or not object is CollisionObject3D:
@@ -131,13 +125,14 @@ func rotate_towards(desired_orientation: Vector3):
 	
 	rotation_degrees.y = lerp_angle(rotation_degrees.y, rotation_degrees.y + angle, 7)
 
+
 func look_around():
 	state_machine.travel("idle1")
 	stand_still()
 
+
 func stand_still():
 	velocity = velocity.move_toward(Vector3.ZERO, .5)
-
 
 
 func walk(direction: Vector3):
@@ -149,6 +144,7 @@ func walk(direction: Vector3):
 	
 	velocity = velocity.move_toward(direction, .5)
 
+
 func run(direction: Vector3):
 	state_machine.travel("run")
 	
@@ -158,12 +154,14 @@ func run(direction: Vector3):
 	
 	velocity = velocity.move_toward(direction, .5)
 
+
 func calculate_direction() -> Vector3:
 	var current_location = global_transform.origin
 	var next_location = nav_agent.get_next_path_position()
 	var new_direction = (next_location - current_location).normalized()
 	
 	return new_direction
+
 
 func check_sight():
 	var area: Area3D = $swat/Armature/Skeleton3D/BoneAttachment3D/Area3D
@@ -172,7 +170,6 @@ func check_sight():
 		target = bodies[0]
 	else:
 		target = null
-
 
 
 func update_target_location(target_location):
