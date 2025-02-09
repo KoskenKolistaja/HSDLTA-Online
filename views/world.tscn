@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://cntwdjchp75a4"]
 
-[ext_resource type="Script" path="res://views/world.gd" id="1_cecjf"]
+[ext_resource type="Script" uid="uid://bo8442xo5col3" path="res://views/world.gd" id="1_cecjf"]
 [ext_resource type="PackedScene" uid="uid://dtvjmxmxrpuxa" path="res://Entities/player.tscn" id="2_k0ktj"]
 [ext_resource type="PackedScene" uid="uid://d2w7jkgm0tj25" path="res://Entities/enemy.tscn" id="3_c6mwe"]
 
