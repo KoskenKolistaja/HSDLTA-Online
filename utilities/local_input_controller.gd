@@ -4,6 +4,10 @@ extends Node
 @onready var player: Player = get_parent()
 
 
+func _ready() -> void:
+	Input.set_use_accumulated_input(false)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		player.look_input += event.relative

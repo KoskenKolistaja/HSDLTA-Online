@@ -25,6 +25,7 @@ var started_shooting_input := false
 var shooting_input := false
 
 var smoothed_look_input := Vector2.ZERO
+var smoothed_look_goal := Vector2.ZERO
 
 
 func _ready():
@@ -32,11 +33,16 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	if look_input_smoother_tween:
-		look_input_smoother_tween.kill()
-	look_input_smoother_tween = create_tween()
-	look_input_smoother_tween.tween_property(self, "smoothed_look_input", look_input, camera_rot_smoothing)
-	rotate_camera(smoothed_look_input)
+	if camera_rot_smoothing:
+		if look_input_smoother_tween:
+			look_input_smoother_tween.kill()
+		look_input_smoother_tween = create_tween()
+		look_input_smoother_tween.tween_property(self, "smoothed_look_input", look_input, camera_rot_smoothing)
+		rotate_camera(smoothed_look_input)
+	else:
+		rotate_camera(look_input)
+	# Reset look_input
+	look_input = Vector2.ZERO
 
 
 func rotate_camera(movement: Vector2):
@@ -47,9 +53,6 @@ func rotate_camera(movement: Vector2):
 	rotation_x -= movement.y * sensitivity * 100
 	rotation_x = clamp(rotation_x, -vertical_limit, vertical_limit)
 	$HeadPivot.rotation_degrees.x = rotation_x
-	
-	# Reset look_input
-	look_input = Vector2.ZERO
 
 
 func _physics_process(delta):
