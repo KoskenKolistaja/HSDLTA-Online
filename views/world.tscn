@@ -8,8 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://bevu03gefrnlw" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_02-128x128.png" id="5_sxxwt"]
 [ext_resource type="Texture2D" uid="uid://nqjns886madl" path="res://Assets/mud_texture/mud_cracked_dry_03_disp_1k.png" id="6_sxxwt"]
 [ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="7_2b1mc"]
-[ext_resource type="PackedScene" path="res://Entities/shack.tscn" id="9_2b1mc"]
-[ext_resource type="PackedScene" path="res://Entities/shack2.tscn" id="10_3s13d"]
+[ext_resource type="PackedScene" uid="uid://djrulb4edqpmm" path="res://Entities/shack.tscn" id="9_2b1mc"]
+[ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_3s13d"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ce5fh"]
 panorama = ExtResource("2_8cm34")

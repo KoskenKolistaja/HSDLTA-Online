@@ -1,6 +1,9 @@
 extends CharacterBody3D
 class_name Player
 
+@export var nv_screen: ColorRect
+@export var nv_light: SpotLight3D
+
 
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
@@ -63,7 +66,12 @@ func _physics_process(delta):
 	# Handle jump.
 	if jump_input and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-
+	
+	
+	if Input.is_action_just_pressed("night_vision"):
+		toggle_night_vision()
+	
+	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = (transform.basis * Vector3(move_input.x, 0, move_input.y)).normalized()
@@ -102,6 +110,15 @@ func cast_ray():
 	if result:
 		collider = result["collider"]
 	return collider
+
+func toggle_night_vision():
+	if nv_screen.visible:
+		nv_screen.hide()
+		nv_light.hide()
+	else:
+		nv_screen.show()
+		nv_light.show()
+		$AudioStreamPlayer.play()
 
 
 func shoot():
