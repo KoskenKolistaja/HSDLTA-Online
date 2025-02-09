@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://db3jtd15ih65c"
+path="res://.godot/imported/Night Vision Goggles.mp3-cec39431d82fb3d91ee066528b488f4f.mp3str"
+
+[deps]
+
+source_file="res://Assets/sfx/Night Vision Goggles.mp3"
+dest_files=["res://.godot/imported/Night Vision Goggles.mp3-cec39431d82fb3d91ee066528b488f4f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
