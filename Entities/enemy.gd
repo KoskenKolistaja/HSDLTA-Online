@@ -78,11 +78,27 @@ func attacking():
 func die():
 	state_machine.travel("die")
 	state = STATES.DEAD
+	velocity = Vector3.ZERO
 
 
 func alert():
-	state_machine.travel("idle_alert")
-	stand_still()
+	#if current_time + 100 < Time.get_ticks_msec():
+		#current_time = Time.get_ticks_msec()
+		#check_sight()
+	
+	
+	if nav_agent.is_navigation_finished():
+		stand_still()
+		state_machine.travel("idle_alert")
+	else:
+		var direction = calculate_direction()
+		walk(direction)
+	
+	if target:
+		change_scene(STATES.ATTACKING)
+	
+	if current_time + 30000 < Time.get_ticks_msec():
+		change_scene(STATES.IDLE)
 
 
 func shoot_at(object):
@@ -134,8 +150,13 @@ func stand_still():
 	velocity = velocity.move_toward(Vector3.ZERO, .5)
 
 
+
+
 func walk(direction: Vector3):
-	state_machine.travel("walk")
+	if state == STATES.ALERT:
+		state_machine.travel("walk_alert")
+	else:
+		state_machine.travel("walk")
 	
 	direction *= WALK_SPEED
 	
@@ -182,7 +203,7 @@ func _on_sight_timer_timeout():
 
 
 func _on_idle_timer_timeout():
-	if state == STATES.IDLE and nav_agent.is_navigation_finished():
+	if state == STATES.IDLE or state == STATES.ALERT and nav_agent.is_navigation_finished():
 		var target_location = self.global_position + Vector3(randf_range(-10,10),0,randf_range(-10,10))
 		update_target_location(target_location)
 		$IdleTimer.wait_time = randf_range(3,12)
