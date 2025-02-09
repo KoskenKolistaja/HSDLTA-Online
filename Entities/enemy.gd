@@ -78,6 +78,7 @@ func attacking():
 func die():
 	state_machine.travel("die")
 	state = STATES.DEAD
+	velocity = Vector3.ZERO
 
 
 func alert():
