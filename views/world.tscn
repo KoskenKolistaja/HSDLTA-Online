@@ -1,21 +1,23 @@
-[gd_scene load_steps=12 format=3 uid="uid://cntwdjchp75a4"]
+[gd_scene load_steps=19 format=3 uid="uid://cntwdjchp75a4"]
 
 [ext_resource type="Script" uid="uid://bo8442xo5col3" path="res://views/world.gd" id="1_cecjf"]
+[ext_resource type="Texture2D" uid="uid://bmmljdc52wjqm" path="res://Assets/textures/8k_stars_milky_way.jpg" id="2_8cm34"]
 [ext_resource type="PackedScene" uid="uid://dtvjmxmxrpuxa" path="res://Entities/player.tscn" id="2_k0ktj"]
 [ext_resource type="PackedScene" uid="uid://d2w7jkgm0tj25" path="res://Entities/enemy.tscn" id="3_c6mwe"]
+[ext_resource type="Texture2D" uid="uid://dayp24mbflcmj" path="res://Assets/mud_texture/mud_cracked_dry_03_diff_1k.png" id="5_rsv1g"]
+[ext_resource type="Texture2D" uid="uid://bevu03gefrnlw" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_02-128x128.png" id="5_sxxwt"]
+[ext_resource type="Texture2D" uid="uid://nqjns886madl" path="res://Assets/mud_texture/mud_cracked_dry_03_disp_1k.png" id="6_sxxwt"]
+[ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="7_2b1mc"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8tro7"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-sky_energy_multiplier = 0.0
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_energy_multiplier = 0.79
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ce5fh"]
+panorama = ExtResource("2_8cm34")
 
-[sub_resource type="Sky" id="Sky_ptra8"]
-sky_material = SubResource("ProceduralSkyMaterial_8tro7")
+[sub_resource type="Sky" id="Sky_2ssdr"]
+sky_material = SubResource("PanoramaSkyMaterial_ce5fh")
 
 [sub_resource type="Environment" id="Environment_q357d"]
 background_mode = 2
-sky = SubResource("Sky_ptra8")
+sky = SubResource("Sky_2ssdr")
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 2.57
 tonemap_mode = 2
@@ -32,17 +34,31 @@ size = Vector3(0.25, 2.5, 3)
 [sub_resource type="BoxMesh" id="BoxMesh_hlhfk"]
 size = Vector3(0.25, 2.5, 3)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2b1mc"]
+albedo_texture = ExtResource("5_sxxwt")
+uv1_triplanar = true
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_dg7w7"]
 size = Vector3(100, 1, 100)
 
 [sub_resource type="BoxMesh" id="BoxMesh_7fobg"]
 size = Vector3(100, 1, 100)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3s13d"]
+albedo_texture = ExtResource("5_rsv1g")
+normal_enabled = true
+normal_texture = ExtResource("7_2b1mc")
+heightmap_flip_tangent = true
+heightmap_texture = ExtResource("6_sxxwt")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
 [node name="World" type="Node3D"]
 script = ExtResource("1_cecjf")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -75,6 +91,7 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="StaticBody3D3" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
@@ -86,6 +103,7 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="StaticBody3D4" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1, 0, 4)
@@ -97,6 +115,7 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D4"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="StaticBody3D5" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3)
@@ -108,6 +127,7 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="StaticBody3D6" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
@@ -119,6 +139,7 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D6"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
 [node name="StaticBody3D7" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 0, 1)
@@ -130,15 +151,17 @@ shape = SubResource("BoxShape3D_7yfjg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D7"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 mesh = SubResource("BoxMesh_hlhfk")
+surface_material_override/0 = SubResource("StandardMaterial3D_2b1mc")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D"]
+[node name="Floor" type="StaticBody3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Floor"]
 shape = SubResource("BoxShape3D_dg7w7")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/StaticBody3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Floor"]
 mesh = SubResource("BoxMesh_7fobg")
+surface_material_override/0 = SubResource("StandardMaterial3D_3s13d")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 5, 0)
