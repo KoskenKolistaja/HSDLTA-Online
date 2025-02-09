@@ -10,9 +10,11 @@ const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
 
 @export var sensitivity: float = 0.005
 @export var vertical_limit: float = 80.0	# Maximum vertical rotation in degrees
+@export var camera_rot_smoothing := 0.02 ## Bigger smooths more.
 
 var movement_speed := 3.0
 var rotation_x: float = 0.0	# Tracks vertical rotation
+var look_input_smoother_tween: Tween = null
 
 # Input vars, set by controller node
 var move_input: Vector2 = Vector2.ZERO
@@ -22,6 +24,7 @@ var sprint_input := false
 var started_shooting_input := false
 var shooting_input := false
 
+var smoothed_look_input := Vector2.ZERO
 
 
 func _ready():
@@ -29,15 +32,19 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	rotate_camera(look_input)
+	if look_input_smoother_tween:
+		look_input_smoother_tween.kill()
+	look_input_smoother_tween = create_tween()
+	look_input_smoother_tween.tween_property(self, "smoothed_look_input", look_input, camera_rot_smoothing)
+	rotate_camera(smoothed_look_input)
 
 
-func rotate_camera(relative_motion: Vector2):
+func rotate_camera(movement: Vector2):
 	# Horizontal rotation (Y-axis)
-	rotation_degrees.y -= relative_motion.x * sensitivity * 100
+	rotation_degrees.y -= movement.x * sensitivity * 100
 	
 	# Vertical rotation (X-axis)
-	rotation_x -= relative_motion.y * sensitivity * 100
+	rotation_x -= movement.y * sensitivity * 100
 	rotation_x = clamp(rotation_x, -vertical_limit, vertical_limit)
 	$HeadPivot.rotation_degrees.x = rotation_x
 	
