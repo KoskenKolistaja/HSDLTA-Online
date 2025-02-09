@@ -1,27 +1,32 @@
 extends CharacterBody3D
-
-
-var SPEED = 3.0
+class_name Player
 
 const JUMP_VELOCITY = 4.5
 
-var RAY_LENGTH = 1000.0  # Adjust the distance of the raycast
-
 @onready var state_machine = $AnimationTree.get("parameters/playback")
-
 @onready var camera = $HeadPivot/Camera3D
 
 @export var sensitivity: float = 0.005
 @export var vertical_limit: float = 80.0	# Maximum vertical rotation in degrees
 
+var RAY_LENGTH = 1000.0  # Adjust the distance of the raycast
+var movement_speed = 3.0
 var rotation_x: float = 0.0	# Tracks vertical rotation
 
-func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)	# Locks the cursor
+# Input vars
+var move_input: Vector2
+var look_input: Vector2
+var jump_input := false
 
-func _input(event):
-	if event is InputEventMouseMotion:
-		rotate_camera(event.relative)
+
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) # Locks the cursor
+
+
+func _process(delta: float) -> void:
+	rotate_camera(look_input)
+
 
 func rotate_camera(relative_motion: Vector2):
 	# Horizontal rotation (Y-axis)
@@ -31,6 +36,10 @@ func rotate_camera(relative_motion: Vector2):
 	rotation_x -= relative_motion.y * sensitivity * 100
 	rotation_x = clamp(rotation_x, -vertical_limit, vertical_limit)
 	$HeadPivot.rotation_degrees.x = rotation_x
+	
+	# Reset look_input
+	look_input = Vector2.ZERO
+
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -38,22 +47,21 @@ func _physics_process(delta):
 		velocity += get_gravity() * delta
 
 	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+	if jump_input and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir = Input.get_vector("left", "right", "up", "down")
-	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction = (transform.basis * Vector3(move_input.x, 0, move_input.y)).normalized()
 	if direction:
 		if Input.is_action_pressed("sprint"):
 			state_machine.travel("run")
-			SPEED = 5.0
+			movement_speed = 5.0
 		else:
 			state_machine.travel("walk")
-			SPEED = 3.0
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+			movement_speed = 3.0
+		velocity.x = direction.x * movement_speed
+		velocity.z = direction.z * movement_speed
 	else:
 		velocity.x = move_toward(velocity.x, 0, 3.0)
 		velocity.z = move_toward(velocity.z, 0, 3.0)

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://drts5f5brei2r"]
+
+[ext_resource type="Script" uid="uid://bpmlfl24f46l2" path="res://utilities/local_input_controller.gd" id="1_mixyi"]
+
+[node name="LocalInputController" type="Node"]
+script = ExtResource("1_mixyi")
