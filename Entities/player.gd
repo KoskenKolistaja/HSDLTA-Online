@@ -14,6 +14,9 @@ const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
 @export var sensitivity: float = 0.005
 @export var vertical_limit: float = 80.0	# Maximum vertical rotation in degrees
 @export var camera_rot_smoothing := 0.02 ## Bigger smooths more.
+@export var capture_mouse := true:
+	set(val):
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 
 var movement_speed := 3.0
 var rotation_x: float = 0.0	# Tracks vertical rotation
@@ -32,7 +35,7 @@ var smoothed_look_goal := Vector2.ZERO
 
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) # Locks the cursor
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 
 
 func _process(delta: float) -> void:
