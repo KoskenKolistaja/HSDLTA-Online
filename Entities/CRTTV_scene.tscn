@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=4 uid="uid://cfhuxsh3l6k27"]
+[gd_scene load_steps=12 format=4 uid="uid://cfhuxsh3l6k27"]
 
 [ext_resource type="Script" uid="uid://b601m1hrxqjol" path="res://Entities/crttv_scene.gd" id="1_1clpk"]
 [ext_resource type="Texture2D" uid="uid://doergib1c8h88" path="res://Assets/CRTVHS/GLTF/CRTTV_CRTTV_Albedo.png" id="1_hkbdf"]
 [ext_resource type="Texture2D" uid="uid://bet6b1oxw0rap" path="res://Assets/CRTVHS/GLTF/CRTTV_CRTTV_Metalness-CRTTV_Roughness.png" id="2_1clpk"]
 [ext_resource type="Texture2D" uid="uid://c1kpi3qx27lty" path="res://Assets/CRTVHS/GLTF/CRTTV_CRTTV_Normal.png" id="3_1yqeb"]
+[ext_resource type="Shader" uid="uid://dvtee22i14g5l" path="res://Entities/CRTTV_scene.tres" id="5_1yqeb"]
+[ext_resource type="Texture2D" uid="uid://irnosxsx0e4o" path="res://icon.svg" id="6_jr5i4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8mp0"]
 resource_name = "CRTV"
@@ -79,19 +81,20 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_87tkh")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1clpk"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1yqeb"]
+render_priority = 0
+shader = ExtResource("5_1yqeb")
+shader_parameter/tex_frg_2 = ExtResource("6_jr5i4")
 
 [node name="CRTTV" type="Node3D" node_paths=PackedStringArray("sub_viewport")]
 script = ExtResource("1_1clpk")
 sub_viewport = NodePath("SubViewport")
 
 [node name="CRTTV2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
 gi_mode = 0
 mesh = SubResource("ArrayMesh_qya8h")
 skeleton = NodePath("")
-surface_material_override/1 = SubResource("StandardMaterial3D_1clpk")
+surface_material_override/1 = SubResource("ShaderMaterial_1yqeb")
 
 [node name="SubViewport" type="SubViewport" parent="."]
-
-[node name="Camera3D" type="Camera3D" parent="SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.827814, 0)

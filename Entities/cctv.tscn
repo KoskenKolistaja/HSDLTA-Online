@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://b1g1vnj4nerh8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_uy7vt"]
+size = Vector3(0.2, 0.1, 0.4)
+
+[node name="CCTV" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_uy7vt")
