@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c6g3jyblet2yk"]
+
+[ext_resource type="Shader" uid="uid://drspo43idw5p8" path="res://Entities/player.tres" id="1_k7120"]
+
+[resource]
+shader = ExtResource("1_k7120")
+shader_parameter/ColorParameter = Color(0.3, 1.4, 0.3, 1)
