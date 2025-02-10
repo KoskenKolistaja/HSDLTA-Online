@@ -25,6 +25,9 @@ sky = SubResource("Sky_2ssdr")
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 2.57
 tonemap_mode = 2
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
 glow_enabled = true
 glow_bloom = 0.07
 
@@ -178,10 +181,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 0)
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 5, 0)
 light_energy = 2.0
+shadow_enabled = true
 spot_range = 15.157
 
 [node name="CRTTV" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("11_mogxl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.734748, 1.02536, -4.61695)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.0165, 4.06811, -2.7374)
 camera = NodePath("../CCTV")
 
 [node name="CCTV" parent="." instance=ExtResource("12_gr4qq")]
