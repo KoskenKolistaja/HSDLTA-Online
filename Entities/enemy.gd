@@ -79,6 +79,7 @@ func die():
 	state_machine.travel("die")
 	state = STATES.DEAD
 	velocity = Vector3.ZERO
+	$SpotLight3D.hide()
 
 
 func alert():

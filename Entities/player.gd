@@ -71,6 +71,11 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("night_vision"):
 		toggle_night_vision()
 	
+	if Input.is_action_pressed("crouch"):
+		$HeadPivot.position.y = move_toward($HeadPivot.position.y,0.75,0.1)
+		movement_speed *= 0.5
+	else:
+		$HeadPivot.position.y = move_toward($HeadPivot.position.y,1.5,0.1)
 	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
