@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbusfj50m6xt3"]
+
+[ext_resource type="Script" uid="uid://duavpdw14jke1" path="res://game/game.gd" id="1_5037y"]
+[ext_resource type="PackedScene" uid="uid://c0sibs2d2t36l" path="res://menus/loading_screen.tscn" id="2_b4vby"]
+
+[node name="Game" type="Node3D"]
+script = ExtResource("1_5037y")
+
+[node name="LoadingScreen" parent="." instance=ExtResource("2_b4vby")]
+visible = false
+mouse_filter = 2

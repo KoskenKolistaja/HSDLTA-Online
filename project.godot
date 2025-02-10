@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Hard Shooter De Los Tres Amigos Online"
-run/main_scene="res://views/test_level.tscn"
+run/main_scene="uid://bbusfj50m6xt3"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Net="*res://networking/net.gd"
 
 [display]
 
@@ -22,6 +26,11 @@ window/size/mode=3
 [dotnet]
 
 project/assembly_name="Hard Shooter De Los Tres Amigos Online"
+
+[global_group]
+
+player_spawn_position=""
+enemy=""
 
 [input]
 
