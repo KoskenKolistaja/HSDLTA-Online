@@ -8,6 +8,9 @@ class_name Player
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
 
+const weapon_default_position = Vector3(0.03, -0.1, -0.01)
+const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
+
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var camera := $HeadPivot/Camera3D
 
@@ -33,6 +36,7 @@ var smoothed_look_goal := Vector2.ZERO
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) # Locks the cursor
+	$HeadPivot/Camera3D/Viewmodel.position = weapon_aim_position
 
 
 func _process(delta: float) -> void:
@@ -77,6 +81,12 @@ func _physics_process(delta):
 	else:
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y,1.5,0.1)
 	
+	if Input.is_action_pressed("mouse2"):
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_aim_position, 0.01)
+	else:
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_default_position, 0.01)
+	
+	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = (transform.basis * Vector3(move_input.x, 0, move_input.y)).normalized()
@@ -96,6 +106,13 @@ func _physics_process(delta):
 		
 	if started_shooting_input and not sprint_input:
 		shoot()
+	
+	if Input.is_action_just_pressed("reload"):
+		state_machine.travel("reload")
+		print("juu")
+	
+	if Input.is_action_pressed("crouch") or Input.is_action_pressed("mouse2"):
+		velocity *= 0.5
 	
 	move_and_slide()
 

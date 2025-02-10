@@ -10,7 +10,7 @@ void fragment() {
 	float avg = (orig_color.r + orig_color.g + orig_color.b) / 3.0;
 	
 	float error_line = sin(SCREEN_UV.y*550.0-TIME*5.0);
-	avg += error_line*0.2;
+	//avg += error_line*0.15;
 	avg = min(avg, 1.0);
 	
 	vec3 color = mix(shadow_color, light_color, avg);
