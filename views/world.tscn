@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://cntwdjchp75a4"]
+[gd_scene load_steps=22 format=3 uid="uid://cntwdjchp75a4"]
 
 [ext_resource type="Script" uid="uid://bo8442xo5col3" path="res://views/world.gd" id="1_cecjf"]
 [ext_resource type="Texture2D" uid="uid://bmmljdc52wjqm" path="res://Assets/textures/8k_stars_milky_way.jpg" id="2_8cm34"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="7_2b1mc"]
 [ext_resource type="PackedScene" uid="uid://djrulb4edqpmm" path="res://Entities/shack.tscn" id="9_2b1mc"]
 [ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_3s13d"]
+[ext_resource type="PackedScene" uid="uid://cfhuxsh3l6k27" path="res://Entities/CRTTV_scene.tscn" id="11_mogxl"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ce5fh"]
 panorama = ExtResource("2_8cm34")
@@ -176,3 +177,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 5, 0)
 light_energy = 2.0
 spot_range = 15.157
+
+[node name="CRTTV" parent="." instance=ExtResource("11_mogxl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.734748, 1.02536, -4.61695)
