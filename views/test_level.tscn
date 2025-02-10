@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://cntwdjchp75a4"]
 
-[ext_resource type="Script" uid="uid://bo8442xo5col3" path="res://views/world.gd" id="1_cecjf"]
+[ext_resource type="Script" uid="uid://dpg0gkx6ltd6m" path="res://views/base_level.gd" id="1_30tb2"]
 [ext_resource type="Texture2D" uid="uid://bmmljdc52wjqm" path="res://Assets/textures/8k_stars_milky_way.jpg" id="2_8cm34"]
 [ext_resource type="PackedScene" uid="uid://dtvjmxmxrpuxa" path="res://Entities/player.tscn" id="2_k0ktj"]
 [ext_resource type="PackedScene" uid="uid://d2w7jkgm0tj25" path="res://Entities/enemy.tscn" id="3_c6mwe"]
@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bevu03gefrnlw" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_02-128x128.png" id="5_sxxwt"]
 [ext_resource type="Texture2D" uid="uid://nqjns886madl" path="res://Assets/mud_texture/mud_cracked_dry_03_disp_1k.png" id="6_sxxwt"]
 [ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="7_2b1mc"]
-[ext_resource type="PackedScene" uid="uid://djrulb4edqpmm" path="res://Entities/shack.tscn" id="9_2b1mc"]
+[ext_resource type="PackedScene" path="res://Entities/shack.tscn" id="9_2b1mc"]
 [ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_3s13d"]
 [ext_resource type="PackedScene" uid="uid://cfhuxsh3l6k27" path="res://Entities/CRTTV_scene.tscn" id="11_mogxl"]
 [ext_resource type="PackedScene" uid="uid://b1g1vnj4nerh8" path="res://Entities/cctv.tscn" id="12_gr4qq"]
@@ -60,8 +60,8 @@ heightmap_texture = ExtResource("6_sxxwt")
 uv1_scale = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
 
-[node name="World" type="Node3D"]
-script = ExtResource("1_cecjf")
+[node name="TestLevel" type="Node3D"]
+script = ExtResource("1_30tb2")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
