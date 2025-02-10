@@ -6,20 +6,23 @@ class_name Player
 
 
 const JUMP_VELOCITY := 4.5
-const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
+const RAY_LENGTH := 1000.0 # Adjust the distance of the raycast
+
+const weapon_default_position = Vector3(0.03, -0.1, -0.01)
+const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
 
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var camera := $HeadPivot/Camera3D
 
 @export var sensitivity: float = 0.005
-@export var vertical_limit: float = 80.0	# Maximum vertical rotation in degrees
+@export var vertical_limit: float = 80.0 # Maximum vertical rotation in degrees
 @export var camera_rot_smoothing := 0.02 ## Bigger smooths more.
 @export var capture_mouse := true:
 	set(val):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 
 var movement_speed := 3.0
-var rotation_x: float = 0.0	# Tracks vertical rotation
+var rotation_x: float = 0.0 # Tracks vertical rotation
 var look_input_smoother_tween: Tween = null
 
 # Input vars, set by controller node
@@ -36,6 +39,7 @@ var smoothed_look_goal := Vector2.ZERO
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
+	$HeadPivot/Camera3D/Viewmodel.position = weapon_aim_position
 
 
 func _process(delta: float) -> void:
@@ -74,6 +78,17 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("night_vision"):
 		toggle_night_vision()
 	
+	if Input.is_action_pressed("crouch"):
+		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 0.75, 0.1)
+		movement_speed *= 0.5
+	else:
+		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 1.5, 0.1)
+	
+	if Input.is_action_pressed("mouse2"):
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_aim_position, 0.01)
+	else:
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_default_position, 0.01)
+	
 	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -94,6 +109,13 @@ func _physics_process(delta):
 		
 	if started_shooting_input and not sprint_input:
 		shoot()
+	
+	if Input.is_action_just_pressed("reload"):
+		state_machine.travel("reload")
+		print("juu")
+	
+	if Input.is_action_pressed("crouch") or Input.is_action_pressed("mouse2"):
+		velocity *= 0.5
 	
 	move_and_slide()
 
