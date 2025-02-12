@@ -7,5 +7,4 @@
 script = ExtResource("1_5037y")
 
 [node name="LoadingScreen" parent="." instance=ExtResource("2_b4vby")]
-visible = false
 mouse_filter = 2

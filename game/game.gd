@@ -4,14 +4,15 @@ extends Node3D
 const PlayerScene: PackedScene = preload("res://Entities/player.tscn")
 
 # TODO load the levels dynamically, not a problem with one level but with many could be
-var level_scenes: Dictionary[String, PackedScene] = {
-	"TestLevel" = preload("res://game/levels/test_level.tscn") 
+var level_scenes: Dictionary[String, String] = {
+	"TestLevel" = "res://game/levels/test_level.tscn" 
 }
 var current_level: BaseLevel = null
 
 
 func _ready() -> void:
 	# For deving, will be replaced later with proper logic
+	await get_tree().process_frame
 	start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
 
 
@@ -30,7 +31,8 @@ func rpc_load_level(level_id: String) -> void:
 		current_level = null
 	
 	# Add level
-	var new_level: BaseLevel = level_scenes[level_id].instantiate()
+	var level_packed_scene := load(level_scenes[level_id])
+	var new_level: BaseLevel = level_packed_scene.instantiate()
 	current_level = new_level
 	add_child(new_level)
 	
@@ -56,3 +58,5 @@ func rpc_load_level(level_id: String) -> void:
 		# and ones with difficulty higher than current difficulty
 		# are freed?
 		pass
+	
+	$LoadingScreen.hide()
