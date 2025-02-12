@@ -19,10 +19,6 @@ config/icon="res://icon.svg"
 
 Net="*res://networking/net.gd"
 
-[display]
-
-window/size/mode=3
-
 [dotnet]
 
 project/assembly_name="Hard Shooter De Los Tres Amigos Online"
