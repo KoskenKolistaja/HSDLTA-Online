@@ -5,12 +5,13 @@ class_name Player
 @export var nv_light: SpotLight3D
 
 
+
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0 # Adjust the distance of the raycast
 
 const weapon_default_position = Vector3(0.03, -0.1, -0.01)
 const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
-
+@export var anim_tree_outer: AnimationTree
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var camera := $HeadPivot/Camera3D
 
@@ -20,6 +21,16 @@ const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
 @export var capture_mouse := true:
 	set(val):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
+
+
+@onready var blendspace_1d: AnimationNodeBlendSpace1D   # Get BlendSpace1D node
+
+
+@onready var blendspace_run: AnimationNodeBlendSpace2D 
+@onready var blendspace_walk: AnimationNodeBlendSpace2D
+@onready var blendspace_cwalk: AnimationNodeBlendSpace2D
+
+
 
 var movement_speed := 3.0
 var rotation_x: float = 0.0 # Tracks vertical rotation
@@ -40,7 +51,17 @@ var smoothed_look_goal := Vector2.ZERO
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 	$HeadPivot/Camera3D/Viewmodel.position = weapon_aim_position
-
+	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
+	
+	#print(anim_tree_outer.get("parameters/playback"))
+	
+	#print(anim_tree_outer.get("parameters/StateMachine/BlendSpace1D").get_blend_point_node(0))
+	#print(anim_tree_outer)
+	#print(blendspace_1d)
+	#
+	#blendspace_run = blendspace_1d.get_blend_point_node(0)
+	#blendspace_walk = blendspace_1d.get_blend_point_node(1)
+	#blendspace_cwalk = blendspace_1d.get_blend_point_node(2)
 
 func _process(delta: float) -> void:
 	if camera_rot_smoothing:
@@ -80,7 +101,10 @@ func _physics_process(delta):
 	
 	if Input.is_action_pressed("crouch"):
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 0.75, 0.1)
-		movement_speed *= 0.5
+		var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"),1,0.1)
+		
+		anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
+
 	else:
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 1.5, 0.1)
 	
@@ -97,15 +121,24 @@ func _physics_process(delta):
 		if sprint_input:
 			state_machine.travel("run")
 			movement_speed = 5.0
+			
+			var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"),-1,0.1)
+			anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
 		else:
 			state_machine.travel("walk")
 			movement_speed = 3.0
+			var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"),0,0.1)
+			anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
+			
 		velocity.x = direction.x * movement_speed
 		velocity.z = direction.z * movement_speed
+		var blend_direction = Vector2(move_input.x, -move_input.y)
+		update_animations(blend_direction)
 	else:
 		velocity.x = move_toward(velocity.x, 0, 3.0)
 		velocity.z = move_toward(velocity.z, 0, 3.0)
 		state_machine.travel("idle")
+		update_animations(Vector2.ZERO)
 		
 	if started_shooting_input and not sprint_input:
 		shoot()
@@ -118,6 +151,19 @@ func _physics_process(delta):
 		velocity *= 0.5
 	
 	move_and_slide()
+
+func update_animations(blend_position: Vector2):
+	var current_position = anim_tree_outer.get("parameters/BlendSpace1D/0/blend_position")
+	var desired = current_position.move_toward(blend_position, 0.1)
+	
+	anim_tree_outer.set("parameters/BlendSpace1D/0/blend_position", desired)
+	anim_tree_outer.set("parameters/BlendSpace1D/1/blend_position", desired)
+	anim_tree_outer.set("parameters/BlendSpace1D/2/blend_position", desired)
+	
+	#blendspace_run.set_blend_point_position(0, blend_position)
+	#blendspace_walk.set_blend_point_position(0, blend_position)
+	#blendspace_cwalk.set_blend_point_position(0, blend_position)
+
 
 
 func cast_ray():
