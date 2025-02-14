@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0sibs2d2t36l"]
+[gd_scene load_steps=3 format=3 uid="uid://c0sibs2d2t36l"]
 
 [ext_resource type="Script" uid="uid://bdn5rfu0o6yyo" path="res://menus/loading_screen.gd" id="1_eg4ge"]
+[ext_resource type="Texture2D" uid="uid://irnosxsx0e4o" path="res://icon.svg" id="2_hm7as"]
 
 [node name="LoadingScreen" type="Control"]
 layout_mode = 3
@@ -31,3 +32,14 @@ grow_vertical = 2
 [node name="Label" type="Label" parent="CenterContainer"]
 layout_mode = 2
 text = "Loading"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.442708
+anchor_top = 0.240741
+anchor_right = 0.553819
+anchor_bottom = 0.438272
+pivot_offset = Vector2(64, 64)
+texture = ExtResource("2_hm7as")
+metadata/_edit_use_anchors_ = true

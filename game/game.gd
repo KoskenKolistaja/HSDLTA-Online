@@ -1,6 +1,8 @@
 extends Node3D
 
 
+signal level_load_finished(succesful: bool)
+
 enum STATE {
 	IN_LOBBY,
 	LOADING_LEVEL,
@@ -16,6 +18,7 @@ var state: STATE = STATE.IN_LOBBY
 var level_scenes: Dictionary[String, String] = {
 	"TestLevel" = "res://game/levels/test_level.tscn" 
 }
+var currently_loading_level_path = ""
 var current_level: BaseLevel = null
 
 
@@ -27,8 +30,23 @@ func _ready() -> void:
 		_debug_host_logic()
 	
 	lobby_screen.game_started.connect(func():
-		start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
+		host_initiate_level_load(level_scenes.keys().pick_random()) # Start loading random level
 	)
+
+
+func _process(delta: float) -> void:
+	# Poll threaded level load to see if it's completed
+	if state == STATE.LOADING_LEVEL and currently_loading_level_path != "":
+		var load_state := ResourceLoader.load_threaded_get_status(currently_loading_level_path)
+		if load_state == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_LOADED:
+			# Succesfully loaded
+			currently_loading_level_path = ""
+			level_load_finished.emit(true)
+		elif load_state == ResourceLoader.ThreadLoadStatus.THREAD_LOAD_FAILED:
+			# Something went wrong while trying to load resource
+			currently_loading_level_path = ""
+			level_load_finished.emit(false)
+		
 
 
 func _debug_host_logic() -> void:
@@ -38,18 +56,19 @@ func _debug_host_logic() -> void:
 		var num: int = int(args[i + 1])
 		if num == 1:
 			# The required debug players is one to start the game so do it immediately
-			start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
+			host_initiate_level_load(level_scenes.keys().pick_random()) # Start loading random level
 		Net.player_joined.connect(func(pd: PlayerData):
 			# Auto-start when the required number of players have joined 
 			# This is meant for debug joining using multiple run instances from godot Debug tab
 			if Net.get_player_count() == num:
 				push_warning("Debug host player count req met. Loading level...")
-				start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
+				host_initiate_level_load(level_scenes.keys().pick_random()) # Start loading random level
 		)
 
 
 func transition_to(new_state: STATE) -> void:
 	var old_state := state
+	state = new_state
 	match new_state:
 		STATE.IN_LOBBY:
 			if current_level:
@@ -69,35 +88,52 @@ func transition_to(new_state: STATE) -> void:
 
 
 ## Loads level for all clients. Should only be called by host
-func start_loading_level(level_id: String) -> void:
+func host_initiate_level_load(level_id: String) -> void:
 	assert(Net.is_server)
-	rpc_load_level.rpc(level_id)
+	rpc_open_level.rpc(level_id)
 
 
 @rpc("any_peer", "call_local", "reliable")
-func rpc_load_level(level_id: String) -> void:
+func rpc_open_level(level_id: String) -> void:
 	push_warning("Load level %s initiated by host" % level_id)
 	transition_to(STATE.LOADING_LEVEL)
-	var start_time := Time.get_ticks_msec()
+	var clock := Clock.new().start()
 	# Unload level
 	if current_level:
 		current_level.queue_free()
 		current_level = null
+		print("Previous level free queued in %s" % clock.measure_and_restart())
+	
+	# Load level
+	currently_loading_level_path = level_scenes[level_id]
+	var level_packed_scene: PackedScene
+	var err := ResourceLoader.load_threaded_request(level_scenes[level_id])
+	print("Threaded load request filed in %sms" % clock.measure_and_restart())
+	if err == OK:
+		var c2 := Clock.new().start()
+		var success: bool = await level_load_finished # Await the result
+		print("\tAwait took %sms" % c2.measure_and_restart())
+		if not success:
+			level_packed_scene = load(level_scenes[level_id])
+		level_packed_scene = ResourceLoader.load_threaded_get(level_scenes[level_id])
+		print("\tResourceLoader.load_threaded_get took %s" % c2.measure())
+	else:
+		# For some reason threaded load is impossible, fall back to regular load
+		push_error("Main thread level load fallback triggered")
+		level_packed_scene = load(level_scenes[level_id])
+	print("New level loaded in: %sms" % clock.measure_and_restart())
 	
 	# Add level
-	# TODO load level in another thread...
-	var level_packed_scene := load(level_scenes[level_id])
 	var new_level: BaseLevel = level_packed_scene.instantiate()
 	current_level = new_level
-	add_child(new_level)
+	add_child(new_level) # Currently this blocks the main thread, not sure how to avoid
+	print("New level added in: %sms" % clock.measure_and_restart())
 	
 	new_level.level_completed.connect(func():
 		if Net.is_server:
-			start_loading_level(level_scenes.keys().pick_random())
+			host_initiate_level_load(level_scenes.keys().pick_random())
 	)
 	
-	var add_time := Time.get_ticks_msec() - start_time
-	print("Instantiated level in: %sms" % add_time)
 	
 	# Load players
 	var spawns := current_level.get_player_spawn_locations()
@@ -112,7 +148,7 @@ func rpc_load_level(level_id: String) -> void:
 		p.player_id = i
 		p.position = spawn.position
 		current_level.add_child(p)
-	print("Loaded players in: %sms" % (Time.get_ticks_msec() - start_time - add_time))
+	print("Players loaded in: %sms" % clock.measure_and_restart())
 	
 	# Process enemies
 	for enemy in current_level.get_enemies():
@@ -122,3 +158,4 @@ func rpc_load_level(level_id: String) -> void:
 		# are freed?
 		pass
 	transition_to(STATE.IN_GAME)
+	print("Enemies updated in: %sms" % clock.measure_and_restart())
