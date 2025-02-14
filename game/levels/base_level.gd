@@ -6,6 +6,19 @@ class_name BaseLevel
 signal level_completed
 signal level_failed
 
+var _clock
+
+
+func _enter_tree() -> void:
+	_clock = Clock.new().start()
+	
+
+func _ready() -> void:
+	if _clock:
+		push_warning("Level _ready() functions in %sms" % _clock.measure())
+	else:
+		push_error("BaseLevel _clock not found in _ready()")
+
 
 func get_player_spawn_locations() -> Array[Node3D]:
 	var arr: Array[Node3D] = []

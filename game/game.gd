@@ -16,7 +16,7 @@ const PlayerScene: PackedScene = preload("res://Entities/player.tscn")
 
 var state: STATE = STATE.IN_LOBBY
 var level_scenes: Dictionary[String, String] = {
-	"TestLevel" = "res://game/levels/test_level.tscn" 
+	"TestLevel" = "res://game/levels/test_level.tscn",
 }
 var currently_loading_level_path = ""
 var current_level: BaseLevel = null
@@ -90,50 +90,58 @@ func transition_to(new_state: STATE) -> void:
 ## Loads level for all clients. Should only be called by host
 func host_initiate_level_load(level_id: String) -> void:
 	assert(Net.is_server)
+	print("Starting level load: %s" % level_id)
 	rpc_open_level.rpc(level_id)
 
 
+## The main function for loading and opening a level.
+##
+## Note that the first time a level is loaded the scene will freeze for ~1-2 seconds at the
+## start because of shader compilations. Subsequent levels won't have this since the 
+## shaders are cached. WORKAROUND: load all mats in a singleton at game start and display 
+## them. This way the shader comp lag will happen at game start... Not sure if much better?
 @rpc("any_peer", "call_local", "reliable")
 func rpc_open_level(level_id: String) -> void:
 	push_warning("Load level %s initiated by host" % level_id)
 	transition_to(STATE.LOADING_LEVEL)
 	var clock := Clock.new().start()
+	
 	# Unload level
 	if current_level:
 		current_level.queue_free()
 		current_level = null
-		print("Previous level free queued in %s" % clock.measure_and_restart())
+		push_warning("Previous level free queued in %s" % clock.measure_and_restart())
 	
 	# Load level
 	currently_loading_level_path = level_scenes[level_id]
+	#var level_packed_scene: PackedScene = load(currently_loading_level_path)
 	var level_packed_scene: PackedScene
-	var err := ResourceLoader.load_threaded_request(level_scenes[level_id])
-	print("Threaded load request filed in %sms" % clock.measure_and_restart())
+	var err := ResourceLoader.load_threaded_request(level_scenes[level_id], "", false, ResourceLoader.CACHE_MODE_IGNORE_DEEP)
+	push_warning("Threaded load request filed in %sms" % clock.measure_and_restart())
 	if err == OK:
 		var c2 := Clock.new().start()
 		var success: bool = await level_load_finished # Await the result
-		print("\tAwait took %sms" % c2.measure_and_restart())
+		push_warning("\tAwait took %sms" % c2.measure_and_restart())
 		if not success:
 			level_packed_scene = load(level_scenes[level_id])
 		level_packed_scene = ResourceLoader.load_threaded_get(level_scenes[level_id])
-		print("\tResourceLoader.load_threaded_get took %s" % c2.measure())
+		push_warning("\tResourceLoader.load_threaded_get took %s" % c2.measure())
 	else:
 		# For some reason threaded load is impossible, fall back to regular load
 		push_error("Main thread level load fallback triggered")
 		level_packed_scene = load(level_scenes[level_id])
-	print("New level loaded in: %sms" % clock.measure_and_restart())
+	push_warning("New level loaded in total of: %sms" % clock.measure_and_restart())
 	
 	# Add level
 	var new_level: BaseLevel = level_packed_scene.instantiate()
 	current_level = new_level
 	add_child(new_level) # Currently this blocks the main thread, not sure how to avoid
-	print("New level added in: %sms" % clock.measure_and_restart())
+	push_warning("New level added in: %sms" % clock.measure_and_restart())
 	
 	new_level.level_completed.connect(func():
 		if Net.is_server:
 			host_initiate_level_load(level_scenes.keys().pick_random())
 	)
-	
 	
 	# Load players
 	var spawns := current_level.get_player_spawn_locations()
@@ -148,7 +156,7 @@ func rpc_open_level(level_id: String) -> void:
 		p.player_id = i
 		p.position = spawn.position
 		current_level.add_child(p)
-	print("Players loaded in: %sms" % clock.measure_and_restart())
+	push_warning("Players loaded in: %sms" % clock.measure_and_restart())
 	
 	# Process enemies
 	for enemy in current_level.get_enemies():
@@ -158,4 +166,4 @@ func rpc_open_level(level_id: String) -> void:
 		# are freed?
 		pass
 	transition_to(STATE.IN_GAME)
-	print("Enemies updated in: %sms" % clock.measure_and_restart())
+	push_warning("Enemies updated in: %sms" % clock.measure_and_restart())
