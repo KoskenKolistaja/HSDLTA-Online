@@ -59,7 +59,9 @@ func rpc_load_level(level_id: String) -> void:
 	# Load players
 	var spawns := current_level.get_player_spawn_locations()
 	for i in spawns.size():
-		if not Net.get_player_by_id(i):
+		i += 1 # To match player ids which start from 1
+		var pd := Net.get_player_by_id(i)
+		if not pd:
 			# Skip if player doesn't exist
 			continue
 		var spawn := spawns[i]
@@ -67,7 +69,6 @@ func rpc_load_level(level_id: String) -> void:
 		p.player_id = i
 		p.position = spawn.position
 		current_level.add_child(p)
-		push_warning("Added player for p_id %s with is_remote %s" % [p.player_id, p.is_remote])
 	print("Loaded players in: %sms" % (Time.get_ticks_msec() - start_time - add_time))
 	
 	# Process enemies

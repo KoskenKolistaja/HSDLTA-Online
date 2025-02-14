@@ -37,12 +37,13 @@ var movement_speed := 3.0
 var rotation_x: float = 0.0 # Tracks vertical rotation
 var look_input_smoother_tween: Tween = null
 
-var is_remote: bool: ## false if this player is not controlled by local player but by network
+var is_local: bool: ## true if locally controlled, false if by network
 	get:
 		var local_pd := Net.get_local_player_or_null()
-		if not local_pd:
-			return false
 		return local_pd.player_id == player_id
+var player: PlayerData:
+	get:
+		return Net.get_player_by_id(player_id)
 
 # Input vars, set by controller node
 var move_input: Vector2 = Vector2.ZERO
@@ -57,9 +58,16 @@ var smoothed_look_goal := Vector2.ZERO
 
 
 func _ready():
+	set_multiplayer_authority(player.network_id, true)
+	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 	$HeadPivot/Camera3D/Viewmodel.position = weapon_aim_position
 	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
+	
+	for c in get_children(true):
+		if c is Camera3D:
+			if is_local:
+				c.make_current()
 	
 	#print(anim_tree_outer.get("parameters/playback"))
 	

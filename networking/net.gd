@@ -52,6 +52,8 @@ func start_joining_game(ip: String) -> void:
 
 
 func get_player_by_id(player_id: int) -> PlayerData:
+	#print("getting player by id %s" % player_id)
+	#print("_player_data: %s" % _player_data)
 	for p in _player_data.values():
 		if p.player_id == player_id:
 			return p
