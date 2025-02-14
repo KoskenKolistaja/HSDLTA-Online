@@ -91,6 +91,11 @@ func rpc_load_level(level_id: String) -> void:
 	current_level = new_level
 	add_child(new_level)
 	
+	new_level.level_completed.connect(func():
+		if Net.is_server:
+			start_loading_level(level_scenes.keys().pick_random())
+	)
+	
 	var add_time := Time.get_ticks_msec() - start_time
 	print("Instantiated level in: %sms" % add_time)
 	

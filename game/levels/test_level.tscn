@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://cntwdjchp75a4"]
+[gd_scene load_steps=27 format=3 uid="uid://cntwdjchp75a4"]
 
 [ext_resource type="Script" uid="uid://dpg0gkx6ltd6m" path="res://game/levels/base_level.gd" id="1_487xt"]
 [ext_resource type="Texture2D" uid="uid://bmmljdc52wjqm" path="res://Assets/textures/8k_stars_milky_way.jpg" id="2_521cr"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_r01v2"]
 [ext_resource type="PackedScene" uid="uid://cfhuxsh3l6k27" path="res://Entities/CRTTV_scene.tscn" id="11_a2sw7"]
 [ext_resource type="PackedScene" uid="uid://b1g1vnj4nerh8" path="res://Entities/cctv.tscn" id="12_pmn5w"]
+[ext_resource type="Script" uid="uid://yecjk4e15wxe" path="res://game/levels/win_area.gd" id="13_521cr"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ce5fh"]
 panorama = ExtResource("2_521cr")
@@ -62,6 +63,17 @@ heightmap_flip_tangent = true
 heightmap_texture = ExtResource("7_siy3b")
 uv1_scale = Vector3(0.5, 0.5, 0.5)
 uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tc1fy"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hp2rm"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oaark"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0.71, 0.201167, 0.380392)
 
 [node name="TestLevel" type="Node3D"]
 script = ExtResource("1_487xt")
@@ -205,3 +217,15 @@ camera = NodePath("../CCTV")
 
 [node name="CCTV" parent="." instance=ExtResource("12_pmn5w")]
 transform = Transform3D(-0.0522497, 0.532847, -0.844597, 0.0329008, 0.846212, 0.53183, 0.998092, 7.09351e-10, -0.0617454, -8.10515, 7.21681, -5.06964)
+
+[node name="WinArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.23737, 1, -11.5064)
+script = ExtResource("13_521cr")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WinArea"]
+shape = SubResource("BoxShape3D_tc1fy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WinArea"]
+mesh = SubResource("BoxMesh_hp2rm")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_oaark")
