@@ -1,42 +1,42 @@
 extends CharacterBody3D
 class_name Player
 
-@export var nv_screen: ColorRect
-@export var nv_light: SpotLight3D
-
-
 
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0 # Adjust the distance of the raycast
+const WEAPON_DEFAULT_POS = Vector3(0.03, -0.1, -0.01)
+const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 
-const weapon_default_position = Vector3(0.03, -0.1, -0.01)
-const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
-@export var anim_tree_outer: AnimationTree
-@onready var state_machine = $AnimationTree.get("parameters/playback")
-@onready var camera := $HeadPivot/Camera3D
-@onready var player_id: int
-
+## Authorative player id of player node.
+@export var player_id: int
+## Mouse sensitivity
 @export var sensitivity: float = 0.005
-@export var vertical_limit: float = 80.0 # Maximum vertical rotation in degrees
-@export var camera_rot_smoothing := 0.02 ## Bigger smooths more.
+## Maximum vertical rotation in degrees
+@export var vertical_limit: float = 80.0 
+## Bigger smooths more.
+@export var camera_rot_smoothing := 0.02 
+## Toggles whether mouse is captured or not.
 @export var capture_mouse := true:
 	set(val):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
+# Night vision vars
+@export var nv_screen: ColorRect
+@export var nv_light: SpotLight3D
 
-
+# Animation variables
+@export var anim_tree_outer: AnimationTree
+@onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var blendspace_1d: AnimationNodeBlendSpace1D   # Get BlendSpace1D node
-
-
 @onready var blendspace_run: AnimationNodeBlendSpace2D 
 @onready var blendspace_walk: AnimationNodeBlendSpace2D
 @onready var blendspace_cwalk: AnimationNodeBlendSpace2D
 
-
+@onready var camera := $HeadPivot/Camera3D
 
 var movement_speed := 3.0
-var rotation_x: float = 0.0 # Tracks vertical rotation
-var look_input_smoother_tween: Tween = null
+var rotation_x: float = 0.0 ## Tracks vertical rotation
 
+# Player convenience functions, all of these use player_id
 var is_local: bool: ## true if locally controlled, false if by network
 	get:
 		var local_pd := Net.get_local_player_or_null()
@@ -50,9 +50,12 @@ var move_input: Vector2 = Vector2.ZERO
 var look_input: Vector2 = Vector2.ZERO
 var jump_input := false
 var sprint_input := false
+var crouch_input := false
 var started_shooting_input := false
 var shooting_input := false
 
+# Camera smoothing variables
+var look_input_smoother_tween: Tween = null
 var smoothed_look_input := Vector2.ZERO
 var smoothed_look_goal := Vector2.ZERO
 
@@ -61,13 +64,12 @@ func _ready():
 	set_multiplayer_authority(player.network_id, true)
 	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
-	$HeadPivot/Camera3D/Viewmodel.position = weapon_aim_position
+	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
 	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
 	
 	for c in get_children(true):
-		if c is Camera3D:
-			if is_local:
-				c.make_current()
+		if c is Camera3D and is_local:
+			c.make_current()
 	
 	#print(anim_tree_outer.get("parameters/playback"))
 	
@@ -115,7 +117,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("night_vision"):
 		toggle_night_vision()
 	
-	if Input.is_action_pressed("crouch"):
+	if crouch_input:
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 0.75, 0.1)
 		var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"),1,0.1)
 		
@@ -125,9 +127,9 @@ func _physics_process(delta):
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 1.5, 0.1)
 	
 	if Input.is_action_pressed("mouse2"):
-		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_aim_position, 0.01)
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(WEAPON_AIM_POS, 0.01)
 	else:
-		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(weapon_default_position, 0.01)
+		$HeadPivot/Camera3D/Viewmodel.position = $HeadPivot/Camera3D/Viewmodel.position.move_toward(WEAPON_DEFAULT_POS, 0.01)
 	
 	
 	# Get the input direction and handle the movement/deceleration.
@@ -213,5 +215,5 @@ func shoot():
 	
 	var hitted_object = cast_ray()
 	if hitted_object:
-		if hitted_object.has_method("die"):
-			hitted_object.die()
+		if hitted_object.has_method("rpc_take_damage"):
+			hitted_object.rpc_take_damage.rpc(10)

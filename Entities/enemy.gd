@@ -75,7 +75,12 @@ func attacking():
 			current_time = Time.get_ticks_msec()
 
 
-func die():
+# Should only be called by rpc
+func rpc_take_dmg(amount: int) -> void:
+	_die()
+
+
+func _die():
 	state_machine.travel("die")
 	state = STATES.DEAD
 	velocity = Vector3.ZERO
