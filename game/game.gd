@@ -64,8 +64,10 @@ func rpc_load_level(level_id: String) -> void:
 			continue
 		var spawn := spawns[i]
 		var p: Player = PlayerScene.instantiate()
+		p.player_id = i
 		p.position = spawn.position
 		current_level.add_child(p)
+		push_warning("Added player for p_id %s with is_remote %s" % [p.player_id, p.is_remote])
 	print("Loaded players in: %sms" % (Time.get_ticks_msec() - start_time - add_time))
 	
 	# Process enemies

@@ -13,6 +13,7 @@ const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
 
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var camera := $HeadPivot/Camera3D
+@onready var player_id: int
 
 @export var sensitivity: float = 0.005
 @export var vertical_limit: float = 80.0 # Maximum vertical rotation in degrees
@@ -24,6 +25,13 @@ const weapon_aim_position = Vector3(-0.016, -0.079, -0.02)
 var movement_speed := 3.0
 var rotation_x: float = 0.0 # Tracks vertical rotation
 var look_input_smoother_tween: Tween = null
+
+var is_remote: bool: ## false if this player is not controlled by local player but by network
+	get:
+		var local_pd := Net.get_local_player_or_null()
+		if not local_pd:
+			return false
+		return local_pd.player_id == player_id
 
 # Input vars, set by controller node
 var move_input: Vector2 = Vector2.ZERO

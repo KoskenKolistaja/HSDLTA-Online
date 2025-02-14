@@ -5,6 +5,8 @@ extends Node
 
 
 func _ready() -> void:
+	if player.is_remote:
+		queue_free()
 	Input.set_use_accumulated_input(false)
 
 
