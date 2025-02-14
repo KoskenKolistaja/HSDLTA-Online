@@ -1,21 +1,40 @@
 extends Node3D
 
 
+enum STATE {
+	IN_LOBBY,
+	LOADING_LEVEL,
+	IN_GAME,
+}
+
 const PlayerScene: PackedScene = preload("res://Entities/player.tscn")
 
-# TODO load the levels dynamically, not a problem with one level but with many takes up memory
+@onready var loading_screen := $LoadingScreen
+@onready var lobby_screen := $LobbyScreen
+
+var state: STATE = STATE.IN_LOBBY
 var level_scenes: Dictionary[String, String] = {
 	"TestLevel" = "res://game/levels/test_level.tscn" 
 }
 var current_level: BaseLevel = null
 
 
+
 func _ready() -> void:
-	# TODO spotty logic just for now... come up with something cleaner
-	
+	transition_to(STATE.IN_LOBBY)
 	var args = OS.get_cmdline_args()
-	if "--debug_players" in args and Net.is_server:
-		var i := args.find("--debug_players")
+	if "--debug_host" in args and Net.is_server:
+		_debug_host_logic()
+	
+	lobby_screen.game_started.connect(func():
+		start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
+	)
+
+
+func _debug_host_logic() -> void:
+	var args = OS.get_cmdline_args()
+	if "--autostart" in args:
+		var i := args.find("--autostart")
 		var num: int = int(args[i + 1])
 		if num == 1:
 			# The required debug players is one to start the game so do it immediately
@@ -27,12 +46,29 @@ func _ready() -> void:
 				push_warning("Debug host player count req met. Loading level...")
 				start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
 		)
-	elif Net.is_server:
-		await get_tree().process_frame
-		start_loading_level(level_scenes.keys().pick_random()) # Start loading random level
 
 
-## Loads level for all clients
+func transition_to(new_state: STATE) -> void:
+	var old_state := state
+	match new_state:
+		STATE.IN_LOBBY:
+			if current_level:
+				current_level.hide()
+			loading_screen.hide()
+			lobby_screen.show()
+		STATE.LOADING_LEVEL:
+			if current_level:
+				current_level.hide()
+			lobby_screen.hide()
+			loading_screen.show()
+		STATE.IN_GAME:
+			lobby_screen.hide()
+			loading_screen.hide()
+			if current_level:
+				current_level.show() # probs not necessary?
+
+
+## Loads level for all clients. Should only be called by host
 func start_loading_level(level_id: String) -> void:
 	assert(Net.is_server)
 	rpc_load_level.rpc(level_id)
@@ -41,6 +77,7 @@ func start_loading_level(level_id: String) -> void:
 @rpc("any_peer", "call_local", "reliable")
 func rpc_load_level(level_id: String) -> void:
 	push_warning("Load level %s initiated by host" % level_id)
+	transition_to(STATE.LOADING_LEVEL)
 	var start_time := Time.get_ticks_msec()
 	# Unload level
 	if current_level:
@@ -48,6 +85,7 @@ func rpc_load_level(level_id: String) -> void:
 		current_level = null
 	
 	# Add level
+	# TODO load level in another thread...
 	var level_packed_scene := load(level_scenes[level_id])
 	var new_level: BaseLevel = level_packed_scene.instantiate()
 	current_level = new_level
@@ -78,5 +116,4 @@ func rpc_load_level(level_id: String) -> void:
 		# and ones with difficulty higher than current difficulty
 		# are freed?
 		pass
-	
-	$LoadingScreen.hide()
+	transition_to(STATE.IN_GAME)

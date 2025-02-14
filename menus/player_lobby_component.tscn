@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://dku4tc6h7xuhc"]
+
+[ext_resource type="Script" uid="uid://4j7skyfmlpg5" path="res://menus/player_lobby_component.gd" id="1_de8gn"]
+
+[node name="PlayerLobbyComponent" type="HBoxContainer"]
+script = ExtResource("1_de8gn")
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Player 1"
+
+[node name="PingLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "78ms"
+horizontal_alignment = 2

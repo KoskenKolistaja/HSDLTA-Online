@@ -67,8 +67,9 @@ func get_local_player() -> PlayerData:
 
 
 func get_local_player_or_null() -> PlayerData:
-	var i := _player_data.values().find_custom(func(pd: PlayerData): return pd.network_id == multiplayer.get_unique_id())
-	return _player_data.values()[i] if i != -1 else null
+	#var i := _player_data.values().find_custom(func(pd: PlayerData): return pd.network_id == multiplayer.get_unique_id())
+	return _player_data.get(multiplayer.get_unique_id(), null)
+	#return _player_data.values()[i] if i != -1 else null
 
 
 func get_player_by_net_id(network_id: int) -> PlayerData:
@@ -78,6 +79,10 @@ func get_player_by_net_id(network_id: int) -> PlayerData:
 func get_player_count() -> int:
 	push_warning("Player count: %s" % _player_data.size())
 	return _player_data.size()
+
+
+func get_players() -> Array[PlayerData]:
+	return _player_data.values()
 
 
 ## Adds the player to _data (for all players) and returns the PlayerData
