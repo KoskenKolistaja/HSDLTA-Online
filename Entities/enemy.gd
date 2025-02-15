@@ -3,10 +3,14 @@ extends CharacterBody3D
 
 @onready var nav_agent := $NavigationAgent3D
 @onready var state_machine = $AnimationTree.get("parameters/playback")
+@onready var syncer: MultiplayerSynchronizer = $MultiplayerSynchronizer
 
 const DEF_SHOOTING_ROTATION := Vector3(11.9,140.4,0.3)
 const WALK_SPEED: float = 1.5
 const RUN_SPEED: float = 4.0
+const FAR_DIST := 8.0 # The distance at which rep interval is changed
+const REP_INTERVAL_FAR := 0.5
+const REP_INTERVAL_NEAR := 0.0
 
 var alert_position: Vector3
 var current_time: int = 0
@@ -23,8 +27,6 @@ enum STATES {
 
 func _physics_process(delta):
 	$Label3D.text = str(target)
-	
-	
 	match state:
 		STATES.IDLE:
 			idle()
@@ -32,8 +34,18 @@ func _physics_process(delta):
 			attacking()
 		STATES.ALERT:
 			alert()
-	
 	move_and_slide()
+	
+	# Only sync frequently once a player is near the enemy.
+	#if Net.is_server:
+		#var shortest_dist: float = Player.instances.map(func(p: Player): 
+			#return p.global_position.distance_squared_to(self.global_position)
+		#).min()
+		#if shortest_dist > FAR_DIST:
+			#syncer.replication_interval = REP_INTERVAL_FAR
+		#else:
+			#syncer.replication_interval = REP_INTERVAL_NEAR
+	
 
 
 func idle():

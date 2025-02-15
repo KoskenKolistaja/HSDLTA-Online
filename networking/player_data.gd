@@ -14,3 +14,11 @@ func _to_string() -> String:
 
 func is_local() -> bool:
 	return Net.get_local_player_or_null().player_id == player_id
+
+
+## Returns a reference to the player node if it exists
+func get_player_node_or_null() -> Player:
+	for p in Player.instances:
+		if p.player_id == player_id:
+			return p
+	return null

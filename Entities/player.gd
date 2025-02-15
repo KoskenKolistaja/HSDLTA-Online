@@ -2,6 +2,10 @@ extends CharacterBody3D
 class_name Player
 
 
+## A static array of the existing players.
+## Can be used from other nodes `var players := Player.instances`
+static var instances: Array[Player] = [] 
+
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0 # Adjust the distance of the raycast
 const WEAPON_DEFAULT_POS = Vector3(0.03, -0.1, -0.01)
@@ -32,6 +36,7 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 @onready var blendspace_cwalk: AnimationNodeBlendSpace2D
 
 @onready var camera := $HeadPivot/Camera3D
+@export var active_camera: Camera3D = null # So that 3rd person can be used for debugging
 
 var movement_speed := 3.0
 var rotation_x: float = 0.0 ## Tracks vertical rotation
@@ -61,15 +66,14 @@ var smoothed_look_goal := Vector2.ZERO
 
 
 func _ready():
+	instances.append(self)
 	set_multiplayer_authority(player.network_id, true)
 	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE else Input.MOUSE_MODE_VISIBLE
 	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
 	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
 	
-	for c in get_children(true):
-		if c is Camera3D and is_local:
-			c.make_current()
+	var cam: Camera3D
 	
 	#print(anim_tree_outer.get("parameters/playback"))
 	
@@ -80,6 +84,14 @@ func _ready():
 	#blendspace_run = blendspace_1d.get_blend_point_node(0)
 	#blendspace_walk = blendspace_1d.get_blend_point_node(1)
 	#blendspace_cwalk = blendspace_1d.get_blend_point_node(2)
+	await get_tree().process_frame
+	if is_local:
+		active_camera.make_current()
+
+
+func _exit_tree() -> void:
+	instances.erase(self)
+
 
 func _process(delta: float) -> void:
 	if camera_rot_smoothing:

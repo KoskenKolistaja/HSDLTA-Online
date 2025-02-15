@@ -12,5 +12,4 @@ text = "Player 1"
 [node name="PingLabel" type="Label" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "78ms"
 horizontal_alignment = 2

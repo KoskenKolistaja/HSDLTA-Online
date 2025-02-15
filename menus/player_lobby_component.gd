@@ -20,12 +20,13 @@ func _process(delta: float) -> void:
 func _update() -> void:
 	$NameLabel.text = player.name
 	
-	if player.network_id == multiplayer.get_unique_id():
-		$PingLabel.hide()
-		return
-	var peer := (multiplayer.multiplayer_peer as ENetMultiplayerPeer)
-	var connection := peer.get_peer(player.network_id)
-	if not connection:
-		$PingLabel.text = "..."
-	else:
-		$PingLabel.text = "%.0fms" % connection.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
+	# This doesn't really work right now... Pings would have to be set by the server
+	#if player.network_id == multiplayer.get_unique_id():
+		#$PingLabel.hide()
+		#return
+	#var peer := (multiplayer.multiplayer_peer as ENetMultiplayerPeer)
+	#var connection := peer.get_peer(player.network_id)
+	#if not connection:
+		#$PingLabel.text = "..."
+	#else:
+		#$PingLabel.text = "%.0fms" % connection.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
