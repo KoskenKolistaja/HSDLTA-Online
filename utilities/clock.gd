@@ -6,11 +6,10 @@ var _start_ms: int
 var started := false
 
 
-func start() -> Clock:
-	assert(not started)
+# Autostarts the clock
+func _init() -> void:
 	_start_ms = Time.get_ticks_msec()
 	started = true
-	return self
 
 
 ## Returns accrued time in ms.

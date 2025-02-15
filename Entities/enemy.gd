@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 
-@onready var nav_agent = $NavigationAgent3D
+@onready var nav_agent := $NavigationAgent3D
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 
 const DEF_SHOOTING_ROTATION := Vector3(11.9,140.4,0.3)
@@ -11,7 +11,7 @@ const RUN_SPEED: float = 4.0
 var alert_position: Vector3
 var current_time: int = 0
 var target: Node3D = null
-var state = STATES.IDLE
+var state := STATES.IDLE
 
 enum STATES {
 	IDLE,
@@ -20,10 +20,6 @@ enum STATES {
 	DEAD
 }
 
-
-
-func _ready():
-	pass
 
 func _physics_process(delta):
 	$Label3D.text = str(target)

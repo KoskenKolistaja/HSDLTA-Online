@@ -10,7 +10,7 @@ var _clock
 
 
 func _enter_tree() -> void:
-	_clock = Clock.new().start()
+	_clock = Clock.new()
 	
 
 func _ready() -> void:

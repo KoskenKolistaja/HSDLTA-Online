@@ -89,6 +89,7 @@ reload={
 
 [layer_names]
 
+3d_render/layer_10="light_detection"
 3d_physics/layer_1="General"
 3d_physics/layer_8="Player"
 

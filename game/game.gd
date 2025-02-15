@@ -104,7 +104,7 @@ func host_initiate_level_load(level_id: String) -> void:
 func rpc_open_level(level_id: String) -> void:
 	push_warning("Load level %s initiated by host" % level_id)
 	transition_to(STATE.LOADING_LEVEL)
-	var clock := Clock.new().start()
+	var clock := Clock.new()
 	
 	# Unload level
 	if current_level:
@@ -119,7 +119,7 @@ func rpc_open_level(level_id: String) -> void:
 	var err := ResourceLoader.load_threaded_request(level_scenes[level_id], "", false, ResourceLoader.CACHE_MODE_IGNORE_DEEP)
 	push_warning("Threaded load request filed in %sms" % clock.measure_and_restart())
 	if err == OK:
-		var c2 := Clock.new().start()
+		var c2 := Clock.new()
 		var success: bool = await level_load_finished # Await the result
 		push_warning("\tAwait took %sms" % c2.measure_and_restart())
 		if not success:

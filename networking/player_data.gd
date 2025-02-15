@@ -5,6 +5,7 @@ class_name PlayerData
 var name: String
 var player_id: int
 var network_id: int
+var equipment
 
 
 func _to_string() -> String:
