@@ -1,6 +1,5 @@
 extends Node
 
-
 signal player_joined(player_data: PlayerData)
 signal player_left(player_data: PlayerData)
 

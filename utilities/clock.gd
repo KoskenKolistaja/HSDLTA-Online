@@ -1,7 +1,6 @@
 extends RefCounted
 class_name Clock
 
-
 var _start_ms: int
 var started := false
 
@@ -24,10 +23,9 @@ func restart() -> Clock:
 	return self
 
 
-## Returns accrued time in ms and restarts the clock. 
+## Returns accrued time in ms and restarts the clock.
 func measure_and_restart() -> int:
 	assert(started)
 	var time := measure()
 	restart()
 	return time
-	

@@ -1,7 +1,6 @@
 extends Node3D
 
-
-@export var UPDATE_CD_MS := 400 # How long between updating the light values
+@export var UPDATE_CD_MS := 400  # How long between updating the light values
 
 @onready var top_vp := $TopViewport
 @onready var bottom_vp := $BottomViewport
@@ -36,7 +35,6 @@ func update() -> void:
 			sum += (0.299 * p.r + 0.587 * p.g + 0.114 * p.b)
 	var avg := sum / (top_img.get_height() * top_img.get_width() * 2)
 	_cached_light_value = min(avg * 2.0, 1.0)
-	
 
 
 func get_light_level() -> float:

@@ -1,6 +1,5 @@
 extends HBoxContainer
 
-
 var player_id: int
 var player: PlayerData:
 	get:
@@ -14,19 +13,19 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	# Game.tscn sets process_mode to false when not needed
-	_update() 
+	_update()
 
 
 func _update() -> void:
 	$NameLabel.text = player.name
-	
+
 	# This doesn't really work right now... Pings would have to be set by the server
 	#if player.network_id == multiplayer.get_unique_id():
-		#$PingLabel.hide()
-		#return
+	#$PingLabel.hide()
+	#return
 	#var peer := (multiplayer.multiplayer_peer as ENetMultiplayerPeer)
 	#var connection := peer.get_peer(player.network_id)
 	#if not connection:
-		#$PingLabel.text = "..."
+	#$PingLabel.text = "..."
 	#else:
-		#$PingLabel.text = "%.0fms" % connection.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
+	#$PingLabel.text = "%.0fms" % connection.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)

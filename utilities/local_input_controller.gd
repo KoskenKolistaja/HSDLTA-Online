@@ -1,6 +1,5 @@
 extends Node
 
-
 @onready var player: Player = get_parent()
 
 
