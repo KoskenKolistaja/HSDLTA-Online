@@ -24,11 +24,12 @@ func host_game() -> void:
 	multiplayer.multiplayer_peer = peer
 	_create_player_for(multiplayer.multiplayer_peer.get_unique_id())
 	push_warning("Hosted game")
-	multiplayer.peer_connected.connect(func(network_id: int):
-		push_warning("Peer connected, creating data...")
-		for pd in _player_data.values():
-			rpc_upsert_player.rpc_id(network_id, inst_to_dict(pd))
-		_create_player_for(network_id)
+	multiplayer.peer_connected.connect(
+		func(network_id: int):
+			push_warning("Peer connected, creating data...")
+			for pd in _player_data.values():
+				rpc_upsert_player.rpc_id(network_id, inst_to_dict(pd))
+			_create_player_for(network_id)
 	)
 
 
@@ -36,17 +37,14 @@ func start_joining_game(ip: String) -> void:
 	var peer := ENetMultiplayerPeer.new()
 	peer.create_client(ip, 25565)
 	multiplayer.multiplayer_peer = peer
-	multiplayer.connected_to_server.connect(func():
-		push_warning("Connected to host succesfully")
-	)
-	multiplayer.connection_failed.connect(func():
-		push_error("Failed to connect to host")
-	)
-	multiplayer.server_disconnected.connect(func():
-		push_error("Host disconnected")
-		multiplayer.multiplayer_peer = null
-		get_tree().change_scene_to_file("uid://bh2soybldlfol")
-		# TODO Display msg that server disconnected
+	multiplayer.connected_to_server.connect(func(): push_warning("Connected to host succesfully"))
+	multiplayer.connection_failed.connect(func(): push_error("Failed to connect to host"))
+	multiplayer.server_disconnected.connect(
+		func():
+			push_error("Host disconnected")
+			multiplayer.multiplayer_peer = null
+			get_tree().change_scene_to_file("uid://bh2soybldlfol")
+			# TODO Display msg that server disconnected
 	)
 
 
@@ -60,7 +58,9 @@ func get_player_by_id(player_id: int) -> PlayerData:
 
 
 func get_local_player() -> PlayerData:
-	var i := _player_data.values().find_custom(func(pd: PlayerData): return pd.network_id == multiplayer.get_unique_id())
+	var i := _player_data.values().find_custom(
+		func(pd: PlayerData): return pd.network_id == multiplayer.get_unique_id()
+	)
 	assert(i != -1, "Could not find local player.")
 	return _player_data.values()[i]
 
