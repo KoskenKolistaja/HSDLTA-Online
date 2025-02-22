@@ -19,7 +19,7 @@ var _enemy_detection_displays: Dictionary[Node3D, DetectEntry] = {}
 
 func _process(delta: float) -> void:
 	for enemy in _enemy_detection_displays:
-		if Time.get_ticks_msec() - _enemy_detection_displays[enemy].last_time_updated > 500:
+		if Time.get_ticks_msec() - _enemy_detection_displays[enemy].last_time_updated > 250:
 			_enemy_detection_displays[enemy].node.queue_free()
 			_enemy_detection_displays.erase(enemy)
 
@@ -37,6 +37,6 @@ func set_detection_level(enemy: Node3D, detection_level: float) -> void:
 	var p_pos := Vector2(p.global_position.x, p.global_position.z)
 	
 	# update
-	display.rotation = (enem_pos - p_pos).rotated(p.rotation.y).angle()
+	display.rotation = (enem_pos - p_pos).rotated(p.rotation.y).angle() + PI / 2.0
 	display.set_detection_level(detection_level)
 	_enemy_detection_displays[enemy].last_time_updated = Time.get_ticks_msec()
