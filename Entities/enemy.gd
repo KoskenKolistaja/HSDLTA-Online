@@ -73,7 +73,6 @@ func handle_detection():
 			
 			if tested_players[player] >= 0.95:
 				target = player
-				print("juu")
 			elif tested_players[player] <= 0:
 				tested_players.erase(player)
 

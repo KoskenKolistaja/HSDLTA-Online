@@ -96,6 +96,7 @@ func _ready():
 		active_camera.make_current()
 		set_fullbody_shadow_only(true)
 		$HeadPivot/Camera3D/Viewmodel.show()
+		$SoldierFullBody/Armature/Skeleton3D/BoneAttachment3D2.hide()
 	else:
 		$HeadPivot/Camera3D/Viewmodel.hide()
 	skeleton_ik.start()
@@ -211,7 +212,9 @@ func _physics_process(delta):
 		update_animation_state(WALK_INT)
 	
 	move_and_slide()
-
+	
+	if Input.is_action_just_pressed("mouse1"):
+		muzzle_flash()
 
 
 func update_animation_state(state: int):
@@ -253,6 +256,15 @@ func get_detectibility():
 	return detectibility
 
 
+func muzzle_flash():
+	var omni_light = $MuzzleFlashLight
+	var tween = create_tween()
+	tween.tween_property(omni_light, "omni_range", 0.0, 0.05)  # 1.0 is duration in seconds
+	print("juu player")
+	$MuzzleFlashLight.omni_range = 20
+
+
+
 func toggle_night_vision():
 	if nv_screen.visible:
 		nv_screen.hide()
@@ -265,7 +277,6 @@ func toggle_night_vision():
 
 func shoot():
 	state_machine.travel("shoot")
-
 	var hitted_object = cast_ray()
 	if hitted_object:
 		if hitted_object.has_method("rpc_take_damage"):
