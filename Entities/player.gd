@@ -41,6 +41,8 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 #@onready var blendspace_walk: AnimationNodeBlendSpace2D
 #@onready var blendspace_cwalk: AnimationNodeBlendSpace2D
 
+@export var muzzle_particles: GPUParticles3D
+
 @onready var camera := $HeadPivot/Camera3D
 @export var active_camera: Camera3D = null  # So that 3rd person can be used for debugging
 
@@ -261,7 +263,8 @@ func muzzle_flash():
 	var tween = create_tween()
 	tween.tween_property(omni_light, "omni_range", 0.0, 0.05)  # 1.0 is duration in seconds
 	print("juu player")
-	$MuzzleFlashLight.omni_range = 20
+	$MuzzleFlashLight.omni_range = 10
+	muzzle_particles.emitting = true
 
 
 
