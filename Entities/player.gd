@@ -44,6 +44,12 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 var movement_speed := 3.0
 var rotation_x: float = 0.0  ## Tracks vertical rotation
 
+const CROUCH_INT = 1
+const WALK_INT = 0
+const SPRINT_INT = -1
+
+
+
 # Player convenience functions, all of these use player_id
 var is_local: bool:  ## true if locally controlled, false if by network
 	get:
@@ -88,8 +94,8 @@ func _ready():
 	await get_tree().process_frame
 	if is_local:
 		active_camera.make_current()
-		$villsotilas_animated.hide()
-		$HeadPivot/Camera3D/Viewmodel.show()
+		#$villsotilas_animated.hide()
+		#$HeadPivot/Camera3D/Viewmodel.show()
 
 
 func _exit_tree() -> void:
@@ -135,11 +141,7 @@ func _physics_process(delta):
 
 	if crouch_input:
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 0.75, 0.1)
-		var new_value = move_toward(
-			anim_tree_outer.get("parameters/BlendSpace1D/blend_position"), 1, 0.1
-		)
 
-		anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
 
 	else:
 		$HeadPivot.position.y = move_toward($HeadPivot.position.y, 1.5, 0.1)
@@ -160,28 +162,19 @@ func _physics_process(delta):
 		if sprint_input:
 			state_machine.travel("run")
 			movement_speed = 5.0
-
-			var new_value = move_toward(
-				anim_tree_outer.get("parameters/BlendSpace1D/blend_position"), -1, 0.1
-			)
-			anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
 		else:
 			state_machine.travel("walk")
 			movement_speed = 3.0
-			var new_value = move_toward(
-				anim_tree_outer.get("parameters/BlendSpace1D/blend_position"), 0, 0.1
-			)
-			anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
 
 		velocity.x = direction.x * movement_speed
 		velocity.z = direction.z * movement_speed
 		var blend_direction = Vector2(move_input.x, -move_input.y)
-		update_animations(blend_direction)
+		update_animation_direction(blend_direction)
 	else:
 		velocity.x = move_toward(velocity.x, 0, 3.0)
 		velocity.z = move_toward(velocity.z, 0, 3.0)
 		state_machine.travel("idle")
-		update_animations(Vector2.ZERO)
+		update_animation_direction(Vector2.ZERO)
 
 	if started_shooting_input and not sprint_input:
 		shoot()
@@ -190,13 +183,25 @@ func _physics_process(delta):
 		state_machine.travel("reload")
 		print("juu")
 
-	if Input.is_action_pressed("crouch") or Input.is_action_pressed("mouse2"):
+	if crouch_input or Input.is_action_pressed("mouse2"):
 		velocity *= 0.5
-
+	
+	if crouch_input:
+		update_animation_state(CROUCH_INT)
+	elif sprint_input:
+		update_animation_state(SPRINT_INT)
+	else:
+		update_animation_state(WALK_INT)
+	
 	move_and_slide()
 
 
-func update_animations(blend_position: Vector2):
+
+func update_animation_state(state: int):
+	var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"), state, 0.1)
+	anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
+
+func update_animation_direction(blend_position: Vector2):
 	var current_position = anim_tree_outer.get("parameters/BlendSpace1D/0/blend_position")
 	var desired = current_position.move_toward(blend_position, 0.1)
 
@@ -204,9 +209,6 @@ func update_animations(blend_position: Vector2):
 	anim_tree_outer.set("parameters/BlendSpace1D/1/blend_position", desired)
 	anim_tree_outer.set("parameters/BlendSpace1D/2/blend_position", desired)
 
-	#blendspace_run.set_blend_point_position(0, blend_position)
-	#blendspace_walk.set_blend_point_position(0, blend_position)
-	#blendspace_cwalk.set_blend_point_position(0, blend_position)
 
 
 func cast_ray():
