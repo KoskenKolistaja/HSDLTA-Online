@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dtfx1t4qjw3ju"]
+[gd_scene load_steps=3 format=3 uid="uid://dtfx1t4qjw3ju"]
 
 [ext_resource type="Script" uid="uid://cgndvfb0f1pdr" path="res://menus/detection_progress.gd" id="1_nfsvj"]
+[ext_resource type="Texture2D" uid="uid://bcvtp30ecjfsf" path="res://Assets/crosshairs/detection_progress.png" id="2_h4bcw"]
 
 [node name="DetectionProgress" type="Control"]
 layout_mode = 3
@@ -8,6 +9,7 @@ anchors_preset = 0
 script = ExtResource("1_nfsvj")
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
+visible = false
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 1
 anchors_preset = 8
@@ -23,3 +25,8 @@ grow_horizontal = 2
 grow_vertical = 2
 max_value = 1.0
 step = 0.001
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -97)
+scale = Vector2(0.225, 0.225)
+texture = ExtResource("2_h4bcw")
