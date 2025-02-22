@@ -6,7 +6,7 @@ class_name BaseLevel
 signal level_completed
 signal level_failed
 
-var _clock
+var _clock: Clock
 
 
 func _enter_tree() -> void:
