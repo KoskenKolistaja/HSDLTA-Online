@@ -26,6 +26,7 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 			if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
 			else Input.MOUSE_MODE_VISIBLE
 		)
+@export var fullbody_mesh: MeshInstance3D = null
 # Night vision vars
 @export var nv_screen: ColorRect
 @export var nv_light: SpotLight3D
@@ -33,7 +34,7 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 # Animation variables
 @export var anim_tree_outer: AnimationTree
 @onready var state_machine = $AnimationTree.get("parameters/playback")
-@onready var skeleton_ik = $villsotilas_animated/Armature/Skeleton3D/SkeletonIK3D
+@onready var skeleton_ik = $SoldierFullBody/Armature/Skeleton3D/SkeletonIK3D
 @onready var ik_target = $IKTarget
 #@onready var blendspace_1d: AnimationNodeBlendSpace1D  # Get BlendSpace1D node
 #@onready var blendspace_run: AnimationNodeBlendSpace2D
@@ -93,10 +94,20 @@ func _ready():
 			else Input.MOUSE_MODE_VISIBLE
 		)
 		active_camera.make_current()
-		#$villsotilas_animated.hide()
-		#$HeadPivot/Camera3D/Viewmodel.show()
+		set_fullbody_shadow_only(true)
+		$HeadPivot/Camera3D/Viewmodel.show()
 	else:
-		skeleton_ik.start()
+		$HeadPivot/Camera3D/Viewmodel.hide()
+	skeleton_ik.start()
+
+
+func set_fullbody_shadow_only(show_shadows_only: bool) -> void:
+	if not fullbody_mesh:
+		return
+	if show_shadows_only:
+		fullbody_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	else:
+		fullbody_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 
 
 func _exit_tree() -> void:
