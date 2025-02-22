@@ -233,6 +233,14 @@ func cast_ray():
 		collider = result["collider"]
 	return collider
 
+func get_detectibility():
+	var light_level = $LightDetector.get_light_level()
+	var detectibility = light_level
+	if crouch_input:
+		detectibility * 0.5
+	
+	return detectibility
+
 
 func toggle_night_vision():
 	if nv_screen.visible:

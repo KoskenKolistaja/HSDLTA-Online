@@ -16,11 +16,19 @@ var current_time: int = 0
 var target: Node3D = null
 var state := STATES.IDLE
 
+var tested_players = []
+
+var known_issues = []
+
 enum STATES { IDLE, ATTACKING, ALERT, DEAD }
 
 
+func acknowledge():
+	pass
+
+
 func _physics_process(delta):
-	$Label3D.text = str(target)
+	$Label3D.text = str(tested_players)
 	match state:
 		STATES.IDLE:
 			idle()
@@ -119,7 +127,7 @@ func can_see(object: Node3D) -> bool:
 	#return false
 	var space_state = get_world_3d().direct_space_state
 	var from = global_transform.origin
-	var to = object.global_position + Vector3(0, 1, 0)
+	var to = object.global_position
 
 	var query = PhysicsRayQueryParameters3D.create(from, to)
 	query.exclude = [self]  # Exclude self to prevent self-collision
@@ -188,12 +196,13 @@ func calculate_direction() -> Vector3:
 
 
 func check_sight():
-	var area: Area3D = $swat/Armature/Skeleton3D/BoneAttachment3D/Area3D
-	var bodies = area.get_overlapping_bodies()
-	if bodies:
-		target = bodies[0]
-	else:
-		target = null
+	pass
+	#var area: Area3D = $swat/Armature/Skeleton3D/BoneAttachment3D/Area3D
+	#var bodies = area.get_overlapping_bodies()
+	#if bodies:
+		#target = bodies[0]
+	#else:
+		#target = null
 
 
 func update_target_location(target_location):
@@ -213,3 +222,13 @@ func _on_idle_timer_timeout():
 		)
 		update_target_location(target_location)
 		$IdleTimer.wait_time = randf_range(3, 12)
+
+
+func _on_detection_zone_body_entered(body):
+	if body is Player:
+		tested_players.append(body)
+
+
+func _on_detection_zone_body_exited(body):
+	if body is Player:
+		tested_players.erase(body)
