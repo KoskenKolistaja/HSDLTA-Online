@@ -37,7 +37,10 @@ func _physics_process(delta):
 		STATES.ALERT:
 			alert()
 	move_and_slide()
-
+	
+	
+	
+	handle_detection()
 	# Only sync frequently once a player is near the enemy.
 	#if Net.is_server:
 	#var shortest_dist: float = Player.instances.map(func(p: Player):
@@ -47,6 +50,52 @@ func _physics_process(delta):
 	#syncer.replication_interval = REP_INTERVAL_FAR
 	#else:
 	#syncer.replication_interval = REP_INTERVAL_NEAR
+
+
+func handle_detection():
+	if tested_players:
+		for item in tested_players:
+			var hit_number = cast_4_rays_to(item)
+			print(str(hit_number) + str(Time.get_ticks_msec()) + str(tested_players))
+
+
+func cast_4_rays_to(object: Node3D) -> int:
+	var object_position = object.global_position
+	var sight_position = $RayCastPosition.global_position
+	
+	var first_position = object_position + Vector3(0,0.1,0)
+	var second_position = object_position + Vector3(0,1,0)
+	var third_position = object_position + Vector3(0,1.25,0)
+	var fourth_position = object_position + Vector3(0,1.5,0)
+	
+	var rays = []
+	
+	var hit_number = 0
+	
+	rays.append(cast_ray(sight_position,first_position))
+	rays.append(cast_ray(sight_position,second_position))
+	rays.append(cast_ray(sight_position,third_position))
+	rays.append(cast_ray(sight_position,fourth_position))
+	
+	for item in rays:
+		if item == object:
+			hit_number += 1
+	
+	return hit_number
+	
+
+
+func cast_ray(from,to):
+	var space_state = get_world_3d().direct_space_state
+	var origin = from
+	var end = to
+	var query = PhysicsRayQueryParameters3D.create(origin, end)
+	query.collide_with_areas = false
+	var result = space_state.intersect_ray(query)
+	var collider = null
+	if result:
+		collider = result["collider"]
+	return collider
 
 
 func idle():
