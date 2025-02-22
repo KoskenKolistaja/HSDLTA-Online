@@ -56,24 +56,35 @@ func handle_detection():
 	if tested_players:
 		for player in tested_players:
 			var hit_number = cast_4_rays_to(player)
-			var detection_multiplier = player.get_detectibility()
+			var detection_multiplier = player.get_detectibility()*4
 			var increase = hit_number * detection_multiplier * 0.01
 			tested_players[player] += increase
 			var hud = get_tree().get_first_node_in_group("hud")
 			tested_players[player] = clamp(tested_players[player],0.0,1.0)
-			if player.is_local:
-				hud.set_detection_level(self, tested_players[player])
 			
-
+			if increase == 0:
+				tested_players[player] -= 0.001
+			
+			
+			if player.is_local:
+				if not tested_players[player] == 0:
+					hud.set_detection_level(self, tested_players[player])
+			
+			
+			if tested_players[player] >= 0.95:
+				target = player
+				print("juu")
+			elif tested_players[player] <= 0:
+				tested_players.erase(player)
 
 func cast_4_rays_to(object: Node3D) -> int:
 	var object_position = object.global_position
 	var sight_position = $RayCastPosition.global_position
 	
 	var first_position = object_position + Vector3(0,0.1,0)
-	var second_position = object_position + Vector3(0,1,0)
-	var third_position = object_position + Vector3(0,1.25,0)
-	var fourth_position = object_position + Vector3(0,1.5,0)
+	var second_position = object_position + Vector3(0.05,1,0.05)
+	var third_position = object_position + Vector3(0.05,1,0.05)
+	var fourth_position = object_position + Vector3(0,1.25,0)
 	
 	var rays = []
 	
@@ -180,10 +191,8 @@ func shoot_at(object):
 
 
 func can_see(object: Node3D) -> bool:
-	#if not object or not object is CollisionObject3D:
-	#return false
 	var space_state = get_world_3d().direct_space_state
-	var from = global_transform.origin
+	var from = $RayCastPosition.global_position
 	var to = object.global_position
 
 	var query = PhysicsRayQueryParameters3D.create(from, to)
@@ -283,10 +292,4 @@ func _on_idle_timer_timeout():
 
 func _on_detection_zone_body_entered(body):
 	if body is Player:
-		
-		tested_players[body] = 0.0
-
-
-func _on_detection_zone_body_exited(body):
-	if body is Player:
-		tested_players.erase(body)
+		tested_players[body] = 0.01
