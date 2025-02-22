@@ -61,14 +61,21 @@ func handle_detection():
 			tested_players[player] += increase
 			var hud = get_tree().get_first_node_in_group("hud")
 			tested_players[player] = clamp(tested_players[player],0.0,1.0)
+			
+			if increase == 0:
+				tested_players[player] -= 0.001
+			
+			
 			if player.is_local:
 				if not tested_players[player] == 0:
 					hud.set_detection_level(self, tested_players[player])
 			
+			
 			if tested_players[player] >= 0.95:
 				target = player
 				print("juu")
-
+			elif tested_players[player] <= 0:
+				tested_players.erase(player)
 
 func cast_4_rays_to(object: Node3D) -> int:
 	var object_position = object.global_position
@@ -285,10 +292,4 @@ func _on_idle_timer_timeout():
 
 func _on_detection_zone_body_entered(body):
 	if body is Player:
-		
-		tested_players[body] = 0.0
-
-
-func _on_detection_zone_body_exited(body):
-	if body is Player:
-		tested_players.erase(body)
+		tested_players[body] = 0.01
