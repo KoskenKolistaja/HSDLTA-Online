@@ -77,6 +77,8 @@ func handle_detection():
 			elif tested_players[player] <= 0:
 				tested_players.erase(player)
 
+
+
 func cast_4_rays_to(object: Node3D) -> int:
 	var object_position = object.global_position
 	var sight_position = $RayCastPosition.global_position
