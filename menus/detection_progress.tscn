@@ -27,6 +27,15 @@ max_value = 1.0
 step = 0.001
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+clip_children = 1
 position = Vector2(0, -97)
 scale = Vector2(0.225, 0.225)
 texture = ExtResource("2_h4bcw")
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -177.778
+offset_top = -4.44444
+offset_right = 182.222
+offset_bottom = 57.5556
+scale = Vector2(0.71, 1)
+pivot_offset = Vector2(180, 31)
