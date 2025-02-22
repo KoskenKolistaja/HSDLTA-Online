@@ -33,10 +33,12 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 # Animation variables
 @export var anim_tree_outer: AnimationTree
 @onready var state_machine = $AnimationTree.get("parameters/playback")
-@onready var blendspace_1d: AnimationNodeBlendSpace1D  # Get BlendSpace1D node
-@onready var blendspace_run: AnimationNodeBlendSpace2D
-@onready var blendspace_walk: AnimationNodeBlendSpace2D
-@onready var blendspace_cwalk: AnimationNodeBlendSpace2D
+@onready var skeleton_ik = $villsotilas_animated/Armature/Skeleton3D/SkeletonIK3D
+@onready var ik_target = $IKTarget
+#@onready var blendspace_1d: AnimationNodeBlendSpace1D  # Get BlendSpace1D node
+#@onready var blendspace_run: AnimationNodeBlendSpace2D
+#@onready var blendspace_walk: AnimationNodeBlendSpace2D
+#@onready var blendspace_cwalk: AnimationNodeBlendSpace2D
 
 @onready var camera := $HeadPivot/Camera3D
 @export var active_camera: Camera3D = null  # So that 3rd person can be used for debugging
@@ -84,7 +86,7 @@ func _ready():
 		else Input.MOUSE_MODE_VISIBLE
 	)
 	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
-	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
+	#blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
 	
 	var cam: Camera3D
 	
@@ -96,7 +98,8 @@ func _ready():
 		active_camera.make_current()
 		#$villsotilas_animated.hide()
 		#$HeadPivot/Camera3D/Viewmodel.show()
-
+	else:
+		skeleton_ik.start()
 
 func _exit_tree() -> void:
 	instances.erase(self)
@@ -125,7 +128,7 @@ func rotate_camera(movement: Vector2):
 	rotation_x -= movement.y * sensitivity * 100
 	rotation_x = clamp(rotation_x, -vertical_limit, vertical_limit)
 	$HeadPivot.rotation_degrees.x = rotation_x
-
+	ik_target.rotation_degrees.x = -rotation_x
 
 func _physics_process(delta):
 	# Add the gravity.
