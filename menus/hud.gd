@@ -16,6 +16,7 @@ func set_detection_level(enemy: Node3D, detection_level: float) -> void:
 	elif detection_level == 0.0 and _enemy_detection_displays.has(enemy):
 		_enemy_detection_displays[enemy].queue_free()
 		_enemy_detection_displays.erase(enemy)
+		return
 	var display := _enemy_detection_displays[enemy]
 	
 	# compute angle

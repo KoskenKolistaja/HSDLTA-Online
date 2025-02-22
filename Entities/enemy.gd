@@ -57,7 +57,7 @@ func handle_detection():
 		for player in tested_players:
 			var hit_number = cast_4_rays_to(player)
 			var detection_multiplier = player.get_detectibility()
-			var increase = hit_number * detection_multiplier
+			var increase = hit_number * detection_multiplier * 0.01
 			tested_players[player] += increase
 			var hud = get_tree().get_first_node_in_group("hud")
 			tested_players[player] = clamp(tested_players[player],0.0,1.0)
