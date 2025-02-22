@@ -62,7 +62,8 @@ func handle_detection():
 			var hud = get_tree().get_first_node_in_group("hud")
 			tested_players[player] = clamp(tested_players[player],0.0,1.0)
 			if player.is_local:
-				hud.set_detection_level(self, tested_players[player])
+				if not tested_players[player] == 0:
+					hud.set_detection_level(self, tested_players[player])
 			
 			if tested_players[player] >= 0.95:
 				target = player
