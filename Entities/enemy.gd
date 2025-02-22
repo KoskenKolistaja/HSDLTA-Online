@@ -16,7 +16,7 @@ var current_time: int = 0
 var target: Node3D = null
 var state := STATES.IDLE
 
-var tested_players = []
+var tested_players: Dictionary[Player, float] = {} 
 
 var known_issues = []
 
@@ -54,9 +54,16 @@ func _physics_process(delta):
 
 func handle_detection():
 	if tested_players:
-		for item in tested_players:
-			var hit_number = cast_4_rays_to(item)
-			print(str(hit_number) + str(Time.get_ticks_msec()) + str(tested_players))
+		for player in tested_players:
+			var hit_number = cast_4_rays_to(player)
+			var detection_multiplier = player.get_detectibility()
+			var increase = hit_number * detection_multiplier
+			tested_players[player] += increase
+			var hud = get_tree().get_first_node_in_group("hud")
+			tested_players[player] = clamp(tested_players[player],0.0,1.0)
+			if player.is_local:
+				hud.set_detection_level(self, tested_players[player])
+			
 
 
 func cast_4_rays_to(object: Node3D) -> int:
@@ -80,6 +87,7 @@ func cast_4_rays_to(object: Node3D) -> int:
 	for item in rays:
 		if item == object:
 			hit_number += 1
+	hit_number *= 0.25
 	
 	return hit_number
 	
@@ -275,7 +283,8 @@ func _on_idle_timer_timeout():
 
 func _on_detection_zone_body_entered(body):
 	if body is Player:
-		tested_players.append(body)
+		
+		tested_players[body] = 0.0
 
 
 func _on_detection_zone_body_exited(body):
