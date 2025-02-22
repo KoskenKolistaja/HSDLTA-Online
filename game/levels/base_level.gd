@@ -6,18 +6,9 @@ class_name BaseLevel
 signal level_completed
 signal level_failed
 
-var _clock: Clock
-
-
-func _enter_tree() -> void:
-	_clock = Clock.new()
-
 
 func _ready() -> void:
-	if _clock:
-		push_warning("Level _ready() functions in %sms" % _clock.measure())
-	else:
-		push_error("BaseLevel _clock not found in _ready()")
+	add_child(preload("res://utilities/hud.tscn").instantiate())
 
 
 func get_player_spawn_locations() -> Array[Node3D]:
