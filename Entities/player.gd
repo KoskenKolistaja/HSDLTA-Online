@@ -80,26 +80,24 @@ func _ready():
 	instances.append(self)
 	set_multiplayer_authority(player.network_id, true)
 
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_CAPTURED
-		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE
-		else Input.MOUSE_MODE_VISIBLE
-	)
 	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
 	#blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
 	
 	var cam: Camera3D
 	
-	
-	
-	
 	await get_tree().process_frame
 	if is_local:
+		Input.mouse_mode = (
+			Input.MOUSE_MODE_CAPTURED
+			if capture_mouse
+			else Input.MOUSE_MODE_VISIBLE
+		)
 		active_camera.make_current()
 		#$villsotilas_animated.hide()
 		#$HeadPivot/Camera3D/Viewmodel.show()
 	else:
 		skeleton_ik.start()
+
 
 func _exit_tree() -> void:
 	instances.erase(self)
@@ -118,6 +116,11 @@ func _process(delta: float) -> void:
 		rotate_camera(look_input)
 	# Reset look_input
 	look_input = Vector2.ZERO
+	
+	# mouse capture toggling
+	if is_local:
+		if Input.is_action_just_pressed("toggle_mouse_capture"):
+			capture_mouse = not capture_mouse
 
 
 func rotate_camera(movement: Vector2):
