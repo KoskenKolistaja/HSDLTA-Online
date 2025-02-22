@@ -8,7 +8,7 @@ signal level_failed
 
 
 func _ready() -> void:
-	add_child(preload("res://utilities/hud.tscn").instantiate())
+	add_child(preload("res://menus/hud.tscn").instantiate())
 
 
 func get_player_spawn_locations() -> Array[Node3D]:
