@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dayp24mbflcmj" path="res://Assets/mud_texture/mud_cracked_dry_03_diff_1k.png" id="6_loh4q"]
 [ext_resource type="Texture2D" uid="uid://nqjns886madl" path="res://Assets/mud_texture/mud_cracked_dry_03_disp_1k.png" id="7_siy3b"]
 [ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="8_ffor3"]
-[ext_resource type="PackedScene" path="res://Entities/shack.tscn" id="9_00l78"]
+[ext_resource type="PackedScene" uid="uid://djrulb4edqpmm" path="res://Entities/shack.tscn" id="9_00l78"]
 [ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_r01v2"]
 [ext_resource type="PackedScene" uid="uid://cfhuxsh3l6k27" path="res://Entities/CRTTV_scene.tscn" id="11_a2sw7"]
 [ext_resource type="PackedScene" uid="uid://b1g1vnj4nerh8" path="res://Entities/cctv.tscn" id="12_pmn5w"]
