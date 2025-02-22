@@ -79,21 +79,17 @@ func _ready():
 	)
 	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
 	blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
-
+	
 	var cam: Camera3D
-
-	#print(anim_tree_outer.get("parameters/playback"))
-
-	#print(anim_tree_outer.get("parameters/StateMachine/BlendSpace1D").get_blend_point_node(0))
-	#print(anim_tree_outer)
-	#print(blendspace_1d)
-	#
-	#blendspace_run = blendspace_1d.get_blend_point_node(0)
-	#blendspace_walk = blendspace_1d.get_blend_point_node(1)
-	#blendspace_cwalk = blendspace_1d.get_blend_point_node(2)
+	
+	
+	
+	
 	await get_tree().process_frame
 	if is_local:
 		active_camera.make_current()
+		$villsotilas_animated.hide()
+		$HeadPivot/Camera3D/Viewmodel.show()
 
 
 func _exit_tree() -> void:
