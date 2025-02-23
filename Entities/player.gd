@@ -41,7 +41,7 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 #@onready var blendspace_walk: AnimationNodeBlendSpace2D
 #@onready var blendspace_cwalk: AnimationNodeBlendSpace2D
 
-@export var muzzle_particles: GPUParticles3D
+@export var muzzle_flash: GPUParticles3D
 
 @onready var camera := $HeadPivot/Camera3D
 @export var active_camera: Camera3D = null  # So that 3rd person can be used for debugging
@@ -201,7 +201,7 @@ func _physics_process(delta):
 
 	if Input.is_action_just_pressed("reload"):
 		state_machine.travel("reload")
-		print("juu")
+
 
 	if crouch_input or Input.is_action_pressed("mouse2"):
 		velocity *= 0.5
@@ -216,7 +216,7 @@ func _physics_process(delta):
 	move_and_slide()
 	
 	if Input.is_action_just_pressed("mouse1"):
-		muzzle_flash()
+		muzzle_flash.flash.rpc()
 
 
 func update_animation_state(state: int):
@@ -231,6 +231,15 @@ func update_animation_direction(blend_position: Vector2):
 	anim_tree_outer.set("parameters/BlendSpace1D/1/blend_position", desired)
 	anim_tree_outer.set("parameters/BlendSpace1D/2/blend_position", desired)
 
+# Should only be called by rpc
+@rpc("any_peer","call_local")
+func rpc_take_damage(amount: int) -> void:
+	print("pelaajan damage")
+	_die()
+
+@rpc("any_peer","call_local")
+func _die():
+	queue_free()
 
 
 func cast_ray():
@@ -238,10 +247,13 @@ func cast_ray():
 	var cam = camera
 	var mousepos = get_viewport().get_mouse_position()
 
-	var origin = cam.project_ray_origin(mousepos)
+	var screen = get_viewport().get_visible_rect().size / 2
+	var screen_center = cam.project_ray_origin(screen)
+
+	var origin = screen_center
 	var end = origin + cam.project_ray_normal(mousepos) * RAY_LENGTH
 	var query = PhysicsRayQueryParameters3D.create(origin, end)
-	query.collide_with_areas = true
+	query.collide_with_areas = false
 
 	var result = space_state.intersect_ray(query)
 	var collider = null
@@ -258,13 +270,7 @@ func get_detectibility():
 	return detectibility
 
 
-func muzzle_flash():
-	var omni_light = $MuzzleFlashLight
-	var tween = create_tween()
-	tween.tween_property(omni_light, "omni_range", 0.0, 0.05)  # 1.0 is duration in seconds
-	print("juu player")
-	$MuzzleFlashLight.omni_range = 10
-	muzzle_particles.emitting = true
+
 
 
 

@@ -1,0 +1,69 @@
+[gd_scene load_steps=11 format=3 uid="uid://b74on0dtlhx8v"]
+
+[ext_resource type="Script" uid="uid://b26osaxi5gwaf" path="res://Entities/muzzle_flash.gd" id="1_q7hqv"]
+
+[sub_resource type="Gradient" id="Gradient_25cb4"]
+colors = PackedColorArray(0.818854, 0.538346, 0, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_uck12"]
+gradient = SubResource("Gradient_25cb4")
+
+[sub_resource type="Curve" id="Curve_mat3c"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.0808511, 0.955056), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_ffc7a"]
+curve = SubResource("Curve_mat3c")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_irn06"]
+angle_min = 1.07288e-05
+angle_max = 226.8
+radial_velocity_min = -2.23517e-05
+radial_velocity_max = -2.23517e-05
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_ffc7a")
+color = Color(0.855511, 0.757803, 0.51718, 1)
+color_ramp = SubResource("GradientTexture1D_uck12")
+
+[sub_resource type="Gradient" id="Gradient_uck12"]
+colors = PackedColorArray(1, 1, 1, 1, 0.23, 0.23, 0.23, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mat3c"]
+gradient = SubResource("Gradient_uck12")
+fill = 2
+fill_from = Vector2(0.512821, 0.504274)
+fill_to = Vector2(1, 0.00854701)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v3fwn"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.954054, 0.862662, 0, 0.812)
+albedo_texture = SubResource("GradientTexture2D_mat3c")
+disable_receive_shadows = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_f8jwp"]
+material = SubResource("StandardMaterial3D_v3fwn")
+size = Vector2(0.5, 0.5)
+
+[node name="MuzzleFlash" type="GPUParticles3D"]
+transform = Transform3D(1, -3.72529e-09, 2.91038e-10, 0, 1, -2.23517e-08, 0, -2.23517e-08, 1, 0, 0, 0)
+emitting = false
+amount = 4
+lifetime = 0.05
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_irn06")
+draw_pass_1 = SubResource("QuadMesh_f8jwp")
+script = ExtResource("1_q7hqv")
+
+[node name="MuzzleFlashLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3487, -0.568804)
+light_color = Color(0.949821, 0.939066, 0.73587, 1)
+light_energy = 0.1
+omni_range = 0.0

@@ -4,6 +4,9 @@ extends CharacterBody3D
 @onready var state_machine = $AnimationTree.get("parameters/playback")
 @onready var syncer: MultiplayerSynchronizer = $MultiplayerSynchronizer
 
+@export var muzzle_flash: GPUParticles3D
+
+
 const DEF_SHOOTING_ROTATION := Vector3(11.9, 140.4, 0.3)
 const WALK_SPEED: float = 1.5
 const RUN_SPEED: float = 4.0
@@ -54,7 +57,19 @@ func _physics_process(delta):
 
 func handle_detection():
 	if tested_players:
+		
 		for player in tested_players:
+			if is_instance_valid(player):
+				pass
+			else:
+				tested_players.erase(player)
+		
+		for player in tested_players:
+			if is_instance_valid(player):
+				pass
+			else:
+				return
+			
 			var hit_number = cast_4_rays_to(player)
 			var detection_multiplier = player.get_detectibility()*4
 			var increase = hit_number * detection_multiplier * 0.01
@@ -142,7 +157,7 @@ func attacking():
 	if not target:
 		change_scene(STATES.ALERT)
 	elif target and can_see(target):
-		shoot_at(target)
+		aim_at(target)
 		current_time = Time.get_ticks_msec()
 	else:
 		update_target_location(target.global_transform.origin)
@@ -154,8 +169,10 @@ func attacking():
 
 
 # Should only be called by rpc
-func rpc_take_dmg(amount: int) -> void:
+@rpc("any_peer","call_local")
+func rpc_take_damage(amount: int) -> void:
 	_die()
+
 
 
 func _die():
@@ -184,12 +201,25 @@ func alert():
 		change_scene(STATES.IDLE)
 
 
-func shoot_at(object):
+func aim_at(object):
 	var direction = (object.global_position - self.global_position).normalized()
 	rotate_towards(direction)
 	state_machine.travel("shoot")
 	stand_still()
+	
+	
+	shoot(object)
+	muzzle_flash.flash.rpc()
 
+
+func shoot(object):
+	var body = cast_ray(muzzle_flash.global_position,object.global_position)
+	print("ammuttiin")
+	if body:
+		print("body löytyi")
+		if body.is_in_group("damageable"):
+			body.rpc_take_damage.rpc(10)
+	
 
 func can_see(object: Node3D) -> bool:
 	var space_state = get_world_3d().direct_space_state
