@@ -31,7 +31,7 @@ func acknowledge():
 
 
 func _physics_process(delta):
-	$Label3D.text = str(tested_players)
+	$Label3D.text = str(target)
 	match state:
 		STATES.IDLE:
 			idle()
@@ -62,12 +62,6 @@ func handle_detection():
 			if is_instance_valid(player):
 				pass
 			else:
-				tested_players.erase(player)
-		
-		for player in tested_players:
-			if is_instance_valid(player):
-				pass
-			else:
 				return
 			
 			var hit_number = cast_4_rays_to(player)
@@ -83,14 +77,21 @@ func handle_detection():
 			
 			if player.is_local:
 				if not tested_players[player] == 0:
-					hud.set_detection_level(self, tested_players[player])
+					if not state == STATES.DEAD:
+						hud.set_detection_level(self, tested_players[player])
 			
 			
 			if tested_players[player] >= 0.95:
-				target = player
+				if multiplayer.is_server() and not target:
+					update_target.rpc(player.get_instance_id())
+					target = player
 			elif tested_players[player] <= 0:
 				tested_players.erase(player)
 
+@rpc("any_peer","call_remote")
+func update_target(encoded_id):
+	var my_node = instance_from_id(encoded_id) as Node3D
+	target = my_node
 
 
 func cast_4_rays_to(object: Node3D) -> int:
@@ -145,17 +146,26 @@ func idle():
 		walk(direction)
 
 	if target:
-		change_scene(STATES.ATTACKING)
+		change_state(STATES.ATTACKING)
 
 
-func change_scene(new_state: STATES):
-	state = new_state
+func change_state(new_state: STATES):
+	if multiplayer.is_server():
+		state = new_state
+		update_state.rpc(new_state)
 	current_time = Time.get_ticks_msec()
 
+@rpc("any_peer","call_remote")
+func update_state(new_state):
+	state = new_state
+
+@rpc("authority", "call_remote")
+func update_animation_state(target_state: String):
+	state_machine.travel(target_state)
 
 func attacking():
 	if not target:
-		change_scene(STATES.ALERT)
+		change_state(STATES.ALERT)
 	elif target and can_see(target):
 		aim_at(target)
 		current_time = Time.get_ticks_msec()
@@ -176,7 +186,10 @@ func rpc_take_damage(amount: int) -> void:
 
 
 func _die():
-	state_machine.travel("die")
+	if multiplayer.is_server():
+		state_machine.travel("die")
+		update_animation_state.rpc("die")
+	
 	state = STATES.DEAD
 	velocity = Vector3.ZERO
 	$SpotLight3D.hide()
@@ -189,26 +202,30 @@ func alert():
 
 	if nav_agent.is_navigation_finished():
 		stand_still()
-		state_machine.travel("idle_alert")
+		if multiplayer.is_server():
+			state_machine.travel("idle_alert")
+			update_animation_state.rpc("idle_alert")
 	else:
 		var direction = calculate_direction()
 		walk(direction)
 
 	if target:
-		change_scene(STATES.ATTACKING)
+		change_state(STATES.ATTACKING)
 
 	if current_time + 30000 < Time.get_ticks_msec():
-		change_scene(STATES.IDLE)
+		change_state(STATES.IDLE)
 
 
 func aim_at(object):
 	var direction = (object.global_position - self.global_position).normalized()
 	rotate_towards(direction)
-	state_machine.travel("shoot")
+	if multiplayer.is_server():
+		state_machine.travel("shoot")
+		update_animation_state.rpc("shoot")
 	stand_still()
 	
-	
-	shoot(object)
+	if multiplayer.is_server():
+		shoot(object)
 	muzzle_flash.flash.rpc()
 
 
@@ -253,8 +270,10 @@ func rotate_towards(desired_orientation: Vector3):
 
 
 func look_around():
-	state_machine.travel("idle1")
-	stand_still()
+	if multiplayer.is_server():
+		state_machine.travel("idle1")
+		update_animation_state.rpc("idle1")
+		stand_still()
 
 
 func stand_still():
@@ -263,9 +282,13 @@ func stand_still():
 
 func walk(direction: Vector3):
 	if state == STATES.ALERT:
-		state_machine.travel("walk_alert")
+		if multiplayer.is_server():
+			state_machine.travel("walk_alert")
+			update_animation_state.rpc("walk_alert")
 	else:
-		state_machine.travel("walk")
+		if multiplayer.is_server():
+			state_machine.travel("walk")
+			update_animation_state.rpc("walk")
 
 	direction *= WALK_SPEED
 
@@ -275,7 +298,9 @@ func walk(direction: Vector3):
 
 
 func run(direction: Vector3):
-	state_machine.travel("run")
+	if multiplayer.is_server():
+		state_machine.travel("run")
+		update_animation_state.rpc("run")
 
 	direction *= RUN_SPEED
 

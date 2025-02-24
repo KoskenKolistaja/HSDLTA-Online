@@ -234,12 +234,16 @@ func update_animation_direction(blend_position: Vector2):
 # Should only be called by rpc
 @rpc("any_peer","call_local")
 func rpc_take_damage(amount: int) -> void:
-	print("pelaajan damage")
+	
+	if not multiplayer.is_server():
+		print("Client havaitsi kuoleman")
+	
 	_die()
 
 @rpc("any_peer","call_local")
 func _die():
-	queue_free()
+	#queue_free()
+	pass
 
 
 func cast_ray():
