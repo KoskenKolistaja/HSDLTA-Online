@@ -215,8 +215,7 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
-	if Input.is_action_just_pressed("mouse1"):
-		muzzle_flash.flash.rpc()
+
 
 
 func update_animation_state(state: int):
@@ -235,8 +234,6 @@ func update_animation_direction(blend_position: Vector2):
 @rpc("any_peer","call_local")
 func rpc_take_damage(amount: int) -> void:
 	
-	if not multiplayer.is_server():
-		print("Client havaitsi kuoleman")
 	
 	_die()
 
@@ -290,6 +287,7 @@ func toggle_night_vision():
 
 func shoot():
 	state_machine.travel("shoot")
+	muzzle_flash.flash.rpc()
 	var hitted_object = cast_ray()
 	if hitted_object:
 		if hitted_object.has_method("rpc_take_damage"):

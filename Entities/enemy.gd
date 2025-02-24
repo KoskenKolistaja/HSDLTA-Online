@@ -90,6 +90,7 @@ func handle_detection():
 
 @rpc("any_peer","call_remote")
 func update_target(encoded_id):
+	print("yritettiin päivittää target")
 	var my_node = instance_from_id(encoded_id) as Node3D
 	target = my_node
 
@@ -231,9 +232,7 @@ func aim_at(object):
 
 func shoot(object):
 	var body = cast_ray(muzzle_flash.global_position,object.global_position)
-	print("ammuttiin")
 	if body:
-		print("body löytyi")
 		if body.is_in_group("damageable"):
 			body.rpc_take_damage.rpc(10)
 	
