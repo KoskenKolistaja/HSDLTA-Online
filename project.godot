@@ -13,7 +13,7 @@ config_version=5
 config/name="Hard Shooter De Los Tres Amigos Online"
 run/main_scene="uid://bbusfj50m6xt3"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://ckvk4cmabvpn5"
 
 [autoload]
 
