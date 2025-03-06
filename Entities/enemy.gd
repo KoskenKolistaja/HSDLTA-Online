@@ -225,15 +225,17 @@ func aim_at(object):
 	
 	if multiplayer.is_server():
 		shoot(object)
-	muzzle_flash.flash.rpc()
+	muzzle_flash.flash.rpc() # This should be called from the animation, no?
 
 
 func shoot(object):
 	#var bullet := BulletScene.instantiate() as Node3D
-	#bullet.global_position = muzzle_flash.global_position
-	#bullet.global_rotation = muzzle_flash.global_rotation
-	#BulletManager.instance.add_child(bullet)
+	#bullet.position = muzzle_flash.global_position
+	#bullet.rotation = muzzle_flash.global_rotation
+	#BulletManager.instance.spawn_bullet(bullet)
+	
 	pass
+	
 	#var body = cast_ray(muzzle_flash.global_position,object.global_position)
 	#if body:
 		#if body.is_in_group("damageable"):

@@ -6,6 +6,7 @@ class_name Player
 static var instances: Array[Player] = []
 
 const BulletScene := preload("res://Entities/bullet.tscn")
+const GUNSHOT := preload("res://Assets/sound/gunshot.wav")
 
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
@@ -94,6 +95,7 @@ func _ready():
 			else Input.MOUSE_MODE_VISIBLE
 		)
 		active_camera.make_current()
+		$AudioListener3D.make_current()
 		set_fullbody_shadow_only(true)
 		$HeadPivot/Camera3D/Viewmodel.show()
 		$SoldierFullBody/Armature/Skeleton3D/BoneAttachment3D2.hide()
@@ -279,8 +281,10 @@ func toggle_night_vision():
 
 ## Called from shoot animation
 func shoot_bullet():
+	$ShootAudioStreamPlayer3D.play()
 	if not is_local:
 		return
+	print("shot")
 	var bullet := BulletScene.instantiate()
 	bullet.position = active_camera.global_position
 	bullet.rotation = active_camera.global_rotation

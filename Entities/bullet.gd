@@ -3,6 +3,8 @@ extends Node3D
 ## Spawned by entities when shooting. Responsible for both visualizing 
 ## the bullet and damaging the target on hit
 
+const BulletHitScene := preload("res://Entities/bullet_hit.tscn")
+
 @export var damage: int = 10
 @export var speed: float = 200.0 ## m/s
 @export var max_range: float = 250
@@ -27,4 +29,8 @@ func _physics_process(delta: float) -> void:
 		if Net.is_server and col.is_in_group("damageable"):
 			col.take_damage(damage)
 		# TODO spawn decal
+		var hit := BulletHitScene.instantiate()
+		hit.position = _raycast.get_collision_point()
+		hit.rotation = rotation
+		get_parent().add_child(hit)
 		queue_free()
