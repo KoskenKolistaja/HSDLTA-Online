@@ -1,0 +1,12 @@
+[gd_scene load_steps=4 format=3 uid="uid://blap0ldlmbdul"]
+
+[ext_resource type="Script" uid="uid://dpg0gkx6ltd6m" path="res://game/levels/base_level.gd" id="1_gxtsi"]
+[ext_resource type="PackedScene" uid="uid://d2qxxhyd8qp3p" path="res://menus/hud.tscn" id="2_weh0f"]
+[ext_resource type="PackedScene" uid="uid://b4w4013jl024n" path="res://game/bullet_manager.tscn" id="3_weh0f"]
+
+[node name="BaseLevel" type="Node3D"]
+script = ExtResource("1_gxtsi")
+
+[node name="HUD" parent="." instance=ExtResource("2_weh0f")]
+
+[node name="BulletManager" parent="." instance=ExtResource("3_weh0f")]

@@ -155,7 +155,7 @@ func rpc_open_level(level_id: String) -> void:
 		var p: Player = PlayerScene.instantiate()
 		p.player_id = i
 		p.position = spawn.position
-		current_level.add_child(p)
+		current_level.add_child(p, true)
 	push_warning("Players loaded in: %sms" % clock.measure_and_restart())
 	
 	# Process enemies
