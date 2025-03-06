@@ -1,7 +1,9 @@
 extends CharacterBody3D
 
+const BulletScene := preload("res://Entities/bullet.tscn")
+
 @onready var nav_agent := $NavigationAgent3D
-@onready var state_machine = $AnimationTree.get("parameters/playback")
+@onready var state_machine: AnimationNodeStateMachinePlayback = $AnimationTree.get("parameters/playback")
 @onready var syncer: MultiplayerSynchronizer = $MultiplayerSynchronizer
 
 @export var muzzle_flash: GPUParticles3D
@@ -57,29 +59,26 @@ func _physics_process(delta):
 
 func handle_detection():
 	if tested_players:
-		
 		for player in tested_players:
-			if is_instance_valid(player):
-				pass
-			else:
+			if not is_instance_valid(player):
+				# This could be handled with a callback
+				tested_players.erase(player)
 				return
-			
 			var hit_number = cast_4_rays_to(player)
 			var detection_multiplier = player.get_detectibility()*4
 			var increase = hit_number * detection_multiplier * 0.01
+			if increase == 0:
+				increase = -0.001
+			if state_machine.get_current_node() == "die":
+				increase = -0.02
 			tested_players[player] += increase
 			var hud = get_tree().get_first_node_in_group("hud")
 			tested_players[player] = clamp(tested_players[player],0.0,1.0)
-			
-			if increase == 0:
-				tested_players[player] -= 0.001
-			
 			
 			if player.is_local:
 				if not tested_players[player] == 0:
 					if not state == STATES.DEAD:
 						hud.set_detection_level(self, tested_players[player])
-			
 			
 			if tested_players[player] >= 0.95:
 				if multiplayer.is_server() and not target:
@@ -179,11 +178,10 @@ func attacking():
 			current_time = Time.get_ticks_msec()
 
 
-# Should only be called by rpc
-@rpc("any_peer","call_local")
-func rpc_take_damage(amount: int) -> void:
+func take_damage(amount: int) -> void:
+	if not Net.is_server:
+		return
 	_die()
-
 
 
 func _die():
@@ -231,10 +229,15 @@ func aim_at(object):
 
 
 func shoot(object):
-	var body = cast_ray(muzzle_flash.global_position,object.global_position)
-	if body:
-		if body.is_in_group("damageable"):
-			body.rpc_take_damage.rpc(10)
+	#var bullet := BulletScene.instantiate() as Node3D
+	#bullet.global_position = muzzle_flash.global_position
+	#bullet.global_rotation = muzzle_flash.global_rotation
+	#BulletManager.instance.add_child(bullet)
+	pass
+	#var body = cast_ray(muzzle_flash.global_position,object.global_position)
+	#if body:
+		#if body.is_in_group("damageable"):
+			#body.rpc_take_damage.rpc(10)
 	
 
 func can_see(object: Node3D) -> bool:

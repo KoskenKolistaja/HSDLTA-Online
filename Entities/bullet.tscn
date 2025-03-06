@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://ccf1jajuhuvth"]
+
+[ext_resource type="Script" uid="uid://nobqndk7alo7" path="res://Entities/bullet.gd" id="1_ceooe"]
+
+[sub_resource type="Curve" id="Curve_ceooe"]
+_data = [Vector2(0.019802, 0.0898877), 0.0, 0.442862, 0, 0, Vector2(0.138614, 0.988764), -0.592086, -0.592086, 0, 0, Vector2(0.990099, 0.449438), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_oawlg"]
+resource_local_to_scene = true
+radius = 0.015
+radial_steps = 5
+sections = 2
+section_length = 0.001
+section_rings = 4
+curve = SubResource("Curve_ceooe")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ceooe"]
+shading_mode = 0
+
+[node name="Bullet" type="Node3D"]
+script = ExtResource("1_ceooe")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="BulletMesh" type="MeshInstance3D" parent="Visual"]
+cast_shadow = 0
+mesh = SubResource("TubeTrailMesh_oawlg")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_ceooe")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1, 0)

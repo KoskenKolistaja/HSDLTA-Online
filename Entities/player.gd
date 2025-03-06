@@ -5,10 +5,16 @@ class_name Player
 ## Can be used from other nodes `var players := Player.instances`
 static var instances: Array[Player] = []
 
+const BulletScene := preload("res://Entities/bullet.tscn")
+
 const JUMP_VELOCITY := 4.5
 const RAY_LENGTH := 1000.0  # Adjust the distance of the raycast
 const WEAPON_DEFAULT_POS = Vector3(0.03, -0.1, -0.01)
 const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
+
+const CROUCH_INT = 1
+const WALK_INT = 0
+const SPRINT_INT = -1
 
 ## Authorative player id of player node.
 @export var player_id: int
@@ -33,7 +39,7 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 
 # Animation variables
 @export var anim_tree_outer: AnimationTree
-@onready var state_machine = $AnimationTree.get("parameters/playback")
+@onready var fp_anim_state_machine = $AnimationTree.get("parameters/playback")
 @onready var skeleton_ik = $SoldierFullBody/Armature/Skeleton3D/SkeletonIK3D
 @onready var ik_target = $IKTarget
 #@onready var blendspace_1d: AnimationNodeBlendSpace1D  # Get BlendSpace1D node
@@ -48,12 +54,6 @@ const WEAPON_AIM_POS = Vector3(-0.016, -0.079, -0.02)
 
 var movement_speed := 3.0
 var rotation_x: float = 0.0  ## Tracks vertical rotation
-
-const CROUCH_INT = 1
-const WALK_INT = 0
-const SPRINT_INT = -1
-
-
 
 # Player convenience functions, all of these use player_id
 var is_local: bool:  ## true if locally controlled, false if by network
@@ -86,8 +86,6 @@ func _ready():
 	$HeadPivot/Camera3D/Viewmodel.position = WEAPON_AIM_POS
 	#blendspace_1d = anim_tree_outer.get("parameters/StateMachine")
 	
-	var cam: Camera3D
-	
 	await get_tree().process_frame
 	if is_local:
 		Input.mouse_mode = (
@@ -101,6 +99,7 @@ func _ready():
 		$SoldierFullBody/Armature/Skeleton3D/BoneAttachment3D2.hide()
 	else:
 		$HeadPivot/Camera3D/Viewmodel.hide()
+		$SoldierFullBody.show()
 	skeleton_ik.start()
 
 
@@ -180,10 +179,10 @@ func _physics_process(delta):
 	var direction = (transform.basis * Vector3(move_input.x, 0, move_input.y)).normalized()
 	if direction:
 		if sprint_input:
-			state_machine.travel("run")
+			fp_anim_state_machine.travel("run")
 			movement_speed = 5.0
 		else:
-			state_machine.travel("walk")
+			fp_anim_state_machine.travel("walk")
 			movement_speed = 3.0
 
 		velocity.x = direction.x * movement_speed
@@ -193,19 +192,15 @@ func _physics_process(delta):
 	else:
 		velocity.x = move_toward(velocity.x, 0, 3.0)
 		velocity.z = move_toward(velocity.z, 0, 3.0)
-		state_machine.travel("idle")
+		fp_anim_state_machine.travel("idle")
 		update_animation_direction(Vector2.ZERO)
 
 	if started_shooting_input and not sprint_input:
-		shoot()
-
+		fp_anim_state_machine.travel("shoot")
 	if Input.is_action_just_pressed("reload"):
-		state_machine.travel("reload")
-
-
+		fp_anim_state_machine.travel("reload")
 	if crouch_input or Input.is_action_pressed("mouse2"):
 		velocity *= 0.5
-	
 	if crouch_input:
 		update_animation_state(CROUCH_INT)
 	elif sprint_input:
@@ -214,13 +209,12 @@ func _physics_process(delta):
 		update_animation_state(WALK_INT)
 	
 	move_and_slide()
-	
-
 
 
 func update_animation_state(state: int):
 	var new_value = move_toward(anim_tree_outer.get("parameters/BlendSpace1D/blend_position"), state, 0.1)
 	anim_tree_outer.set("parameters/BlendSpace1D/blend_position", new_value)
+
 
 func update_animation_direction(blend_position: Vector2):
 	var current_position = anim_tree_outer.get("parameters/BlendSpace1D/0/blend_position")
@@ -230,25 +224,26 @@ func update_animation_direction(blend_position: Vector2):
 	anim_tree_outer.set("parameters/BlendSpace1D/1/blend_position", desired)
 	anim_tree_outer.set("parameters/BlendSpace1D/2/blend_position", desired)
 
-# Should only be called by rpc
-@rpc("any_peer","call_local")
-func rpc_take_damage(amount: int) -> void:
-	
-	
-	_die()
+
+func take_damage(amount: int) -> void:
+	if not Net.is_server:
+		return
+	_die.rpc()
+
 
 @rpc("any_peer","call_local")
 func _die():
 	#queue_free()
+	print("%s died" % self)
 	pass
 
 
 func cast_ray():
-	var space_state = get_world_3d().direct_space_state
-	var cam = camera
-	var mousepos = get_viewport().get_mouse_position()
+	var space_state := get_world_3d().direct_space_state
+	var cam := camera
+	var mousepos := get_viewport().get_mouse_position()
 
-	var screen = get_viewport().get_visible_rect().size / 2
+	var screen := get_viewport().get_visible_rect().size / 2
 	var screen_center = cam.project_ray_origin(screen)
 
 	var origin = screen_center
@@ -262,6 +257,7 @@ func cast_ray():
 		collider = result["collider"]
 	return collider
 
+
 func get_detectibility():
 	var light_level = $LightDetector.get_light_level()
 	var detectibility = light_level
@@ -269,10 +265,6 @@ func get_detectibility():
 		detectibility * 0.5
 	
 	return detectibility
-
-
-
-
 
 
 func toggle_night_vision():
@@ -285,10 +277,20 @@ func toggle_night_vision():
 		$AudioStreamPlayer.play()
 
 
-func shoot():
-	state_machine.travel("shoot")
-	muzzle_flash.flash.rpc()
-	var hitted_object = cast_ray()
-	if hitted_object:
-		if hitted_object.has_method("rpc_take_damage"):
-			hitted_object.rpc_take_damage.rpc(10)
+## Called from shoot animation
+func shoot_bullet():
+	if not is_local:
+		return
+	var bullet := BulletScene.instantiate()
+	bullet.position = active_camera.global_position
+	bullet.rotation = active_camera.global_rotation
+	bullet.rotation.x += deg_to_rad(-90)
+	BulletManager.instance.spawn_bullet(bullet)
+	#var hitted_object = cast_ray()
+	#if hitted_object:
+		#if hitted_object.has_method("rpc_take_damage"):
+			#hitted_object.rpc_take_damage.rpc(10)
+
+
+func _to_string() -> String:
+	return "Player %s" % player_id

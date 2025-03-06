@@ -33,6 +33,7 @@ project/assembly_name="Hard Shooter De Los Tres Amigos Online"
 player_spawn_position=""
 enemy=""
 night="Will be hidden on day levels on level load"
+damageable=""
 
 [input]
 
