@@ -1,4 +1,7 @@
-[gd_scene load_steps=20 format=4 uid="uid://cmy37pu4qh8nw"]
+[gd_scene load_steps=26 format=4 uid="uid://cmy37pu4qh8nw"]
+
+[ext_resource type="Texture2D" uid="uid://du3cytqvspjce" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Plaster/Plaster_02-128x128.png" id="1_l3m03"]
+[ext_resource type="Texture2D" uid="uid://xlksifamst1f" path="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_25-128x128.png" id="2_l3m03"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7x07l"]
 resource_name = "Concrete"
@@ -92,6 +95,21 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_1c470")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sr3lb"]
+albedo_texture = ExtResource("1_l3m03")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wt7sc"]
+albedo_texture = ExtResource("2_l3m03")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_llsua"]
+cull_mode = 2
+albedo_texture = ExtResource("1_l3m03")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nimom"]
 resource_name = "Lamp"
 cull_mode = 2
@@ -161,6 +179,10 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_gn4vx")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tnom3"]
+transparency = 1
+albedo_color = Color(1, 1, 0.662745, 0.333333)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jv2nw"]
 resource_name = "Tube_emission"
@@ -287,16 +309,57 @@ far = 100.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("ArrayMesh_ci5gm")
 skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_sr3lb")
+surface_material_override/1 = SubResource("StandardMaterial3D_wt7sc")
+surface_material_override/2 = SubResource("StandardMaterial3D_llsua")
 
 [node name="Point" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 4.30619, 2.044, -0.513499)
 light_energy = 5.622
-omni_range = 4096.0
+shadow_enabled = true
+omni_range = 5.103
+
+[node name="Point2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.30619, 3.044, -1.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
+
+[node name="Point3" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.30619, 3.044, -9.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
+
+[node name="Point4" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.69381, 3.044, -1.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
+
+[node name="Point5" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.69381, 3.044, -9.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
+
+[node name="Point6" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -8.69381, 3.044, -1.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
+
+[node name="Point7" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -8.69381, 3.044, -9.5135)
+light_energy = 0.433
+shadow_enabled = true
+omni_range = 10.596
 
 [node name="Lamp" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.04568, 2.67539, -0.519615)
 mesh = SubResource("ArrayMesh_kgvgs")
 skeleton = NodePath("")
+surface_material_override/1 = SubResource("StandardMaterial3D_tnom3")
 
 [node name="Fluorescent" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.21365, 3.599, -4.42713)

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://clatogx0xa84r"
-path.s3tc="res://.godot/imported/Bricks_08-128x128.png-144bcca3efb6c0f2faf815a71642a099.s3tc.ctex"
+uid="uid://du3cytqvspjce"
+path.s3tc="res://.godot/imported/Plaster_02-128x128.png-9d75c8a1887460201456768c53502c7e.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Assets/Tiny Texture Pack - 128x128/128x128/Bricks/Bricks_08-128x128.png"
-dest_files=["res://.godot/imported/Bricks_08-128x128.png-144bcca3efb6c0f2faf815a71642a099.s3tc.ctex"]
+source_file="res://Assets/Tiny Texture Pack - 128x128/128x128/Plaster/Plaster_02-128x128.png"
+dest_files=["res://.godot/imported/Plaster_02-128x128.png-9d75c8a1887460201456768c53502c7e.s3tc.ctex"]
 
 [params]
 
