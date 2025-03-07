@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://0m34pfp7387n" path="res://Assets/fps_ak47/textures/ak74m_baseColor.png" id="5_tmgwn"]
 [ext_resource type="Texture2D" uid="uid://bppa5wjwb2gr1" path="res://Assets/fps_ak47/textures/ak74m_metallicRoughness.png" id="6_2k6sx"]
 [ext_resource type="Texture2D" uid="uid://c2qcr5esqwofu" path="res://Assets/fps_ak47/textures/ak74m_normal.png" id="7_uqp2m"]
-[ext_resource type="PackedScene" path="res://Entities/MuzzleFlash.tscn" id="8_uck12"]
+[ext_resource type="PackedScene" uid="uid://b74on0dtlhx8v" path="res://Entities/MuzzleFlash.tscn" id="8_uck12"]
 [ext_resource type="PackedScene" uid="uid://drts5f5brei2r" path="res://utilities/local_input_controller.tscn" id="9_ua6mu"]
 [ext_resource type="Material" uid="uid://c6g3jyblet2yk" path="res://Entities/noise_night_vision.tres" id="10_xakct"]
 [ext_resource type="AudioStream" uid="uid://db3jtd15ih65c" path="res://Assets/sfx/Night Vision Goggles.mp3" id="11_xakct"]

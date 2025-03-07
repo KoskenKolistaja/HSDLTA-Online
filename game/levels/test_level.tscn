@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://cntwdjchp75a4"]
+[gd_scene load_steps=29 format=3 uid="uid://cntwdjchp75a4"]
 
 [ext_resource type="Script" uid="uid://dpg0gkx6ltd6m" path="res://game/levels/base_level.gd" id="1_487xt"]
 [ext_resource type="Texture2D" uid="uid://bmmljdc52wjqm" path="res://Assets/textures/8k_stars_milky_way.jpg" id="2_521cr"]
@@ -9,11 +9,12 @@
 [ext_resource type="Texture2D" uid="uid://dayp24mbflcmj" path="res://Assets/mud_texture/mud_cracked_dry_03_diff_1k.png" id="6_loh4q"]
 [ext_resource type="Texture2D" uid="uid://nqjns886madl" path="res://Assets/mud_texture/mud_cracked_dry_03_disp_1k.png" id="7_siy3b"]
 [ext_resource type="Texture2D" uid="uid://bui53mve2urbi" path="res://Assets/mud_texture/mud_cracked_dry_03_nor_dx_1k.png" id="8_ffor3"]
-[ext_resource type="PackedScene" path="res://Entities/shack.tscn" id="9_00l78"]
+[ext_resource type="PackedScene" uid="uid://djrulb4edqpmm" path="res://Entities/shack.tscn" id="9_00l78"]
 [ext_resource type="PackedScene" uid="uid://b4u1iuljbjxoj" path="res://Entities/shack2.tscn" id="10_r01v2"]
 [ext_resource type="PackedScene" uid="uid://cfhuxsh3l6k27" path="res://Entities/CRTTV_scene.tscn" id="11_a2sw7"]
 [ext_resource type="PackedScene" uid="uid://b1g1vnj4nerh8" path="res://Entities/cctv.tscn" id="12_pmn5w"]
 [ext_resource type="Script" uid="uid://yecjk4e15wxe" path="res://game/levels/win_area.gd" id="13_521cr"]
+[ext_resource type="PackedScene" uid="uid://cmy37pu4qh8nw" path="res://Entities/Buildings/hall.tscn" id="15_hp2rm"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ce5fh"]
 panorama = ExtResource("2_521cr")
@@ -240,3 +241,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.1779, 0, -5.1057)
 
 [node name="Node3D" type="Node3D" parent="GuardPath"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.33203, 0.0499992, 2.39444)
+
+[node name="Hall" parent="." instance=ExtResource("15_hp2rm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17, 0, -15)

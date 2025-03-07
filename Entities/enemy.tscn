@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bd6tqtqrr1yo2" path="res://Assets/VerzatileAkPack/VerzatileAK.fbm/Toaster2New.jpg" id="6_sqhkc"]
 [ext_resource type="Texture2D" uid="uid://bc8bimn67crdi" path="res://Assets/VerzatileAkPack/VerzatileAK.fbm/WoodtextureTable.jpg" id="7_dqw47"]
 [ext_resource type="Texture2D" uid="uid://bwwf1euxs8fm5" path="res://Assets/VerzatileAkPack/VerzatileAK.fbm/ToasterTexture2.jpg" id="8_pt670"]
-[ext_resource type="PackedScene" path="res://Entities/MuzzleFlash.tscn" id="9_uwg5a"]
+[ext_resource type="PackedScene" uid="uid://b74on0dtlhx8v" path="res://Entities/MuzzleFlash.tscn" id="9_uwg5a"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_shtcw"]
 radius = 0.3
